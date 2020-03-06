@@ -19,7 +19,7 @@ namespace Hydra_compiler
 
         public override string ToString()
         {
-            return $"[{Category}, \"{Lexeme}\", {Row}, {Column}]";
+            return $"[{Category}, \"{Lexeme}\", @({Row}, {Column})]";
         }
     }
 }

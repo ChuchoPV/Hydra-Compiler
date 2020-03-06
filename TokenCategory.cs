@@ -2,13 +2,16 @@ namespace Hydra_compiler
 {   
     public enum TokenCategory
     {
-        PLUS, TIMES, OPEN_PAR, CLOSE_PAR, EOF, BAD_TOKEN,
-        //Keyworkds
+        //Keywords
         BREAK, ELIF, ELSE, FALSE, IF, RETURN, TRUE, VAR, WHILE,
         //IDENTIFIER
         IDENTIFIER,
         //LITERALS
-        INT, CHAR, STRING
-
+        INT_LITERAL, CHAR_LITERAL, STRING_LITERAL,
+        //Operators
+        PLUS, TIMES, OPEN_PAR, CLOSE_PAR, NEG, DIV, MOD, NOT, AND, OR, EQUALTO, NOTEQUALTO, GREATER,
+        LESS, GREATEREQUAL, LESSEQUAL,
+        //Extras
+        EOF, BAD_TOKEN,
     }
 }   
