@@ -1,3 +1,8 @@
 Hydra.csproj
 bin/
 obj/
+.vs/Hydra/xs/project-cache/Hydra-Debug.json
+.vs/Hydra/xs/sqlite3/db.lock
+.vs/Hydra/xs/sqlite3/storage.ide
+.vs/Hydra/xs/UserPrefs.xml
+hydra.exe
