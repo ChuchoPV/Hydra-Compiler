@@ -12,6 +12,7 @@ namespace Hydra_compiler
         static readonly Regex regex =  new Regex(
             @"
                 (?<And>             [&][&]    )
+              | (?<Or>              [|][|]    )
               | (?<BlockComment>    (\/\*(\*(?!\/)|[^*])*\*\/) ) 
               | (?<Comment>         [/][/].*  )
               | (?<EOL>             [;]       )

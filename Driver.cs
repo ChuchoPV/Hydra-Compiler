@@ -55,9 +55,6 @@ namespace Hydra_compiler
                 );
                 var count = 1;
                 foreach (var tok in new Scanner(input).Start()) {
-                    // Console.WriteLine(String.Format("[{0}] {1}",
-                    //                                 count++, tok)
-                    // );
                     Console.WriteLine($"[{count++}] {tok}");
                 }
 
