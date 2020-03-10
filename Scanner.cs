@@ -17,10 +17,10 @@ namespace Hydra_compiler
               | (?<Comment>         [/][/].*  )
               | (?<EOL>             [;]       )
               | (?<Comma>           [,]       )
-              | (?<Identifier>      [a-zA-Z]\w* )   
-              | (?<CharLiteral>    (['].['])|([\\][nrt'""\\])|([\\][u][a-fA-f0-9]{6}))
-              | (?<StringLiteral>  ([""].*[""]))
-              | (?<IntLiteral>      \d+       )
+              | (?<ID>              [a-zA-Z]\w* )   
+              | (?<litchar>        (['].['])|([\\][nrt'""\\])|([\\][u][a-fA-f0-9]{6}))
+              | (?<litstr>         ([""].*[""]))
+              | (?<litint>         \d+       )
               | (?<PlusPlus>        [+][+]    )
               | (?<LessLess>        [-][-]    )
               | (?<PlusEqual>       [+][=]    )
@@ -82,9 +82,9 @@ namespace Hydra_compiler
 
         static readonly IDictionary<string, TokenCategory> nonKeywords =
             new Dictionary<string, TokenCategory>() {
-                {"IntLiteral", TokenCategory.INT_LITERAL},
-                {"CharLiteral", TokenCategory.CHAR_LITERAL},
-                {"StringLiteral", TokenCategory.STRING_LITERAL},
+                {"litint", TokenCategory.LIT_INT},
+                {"litchar", TokenCategory.LIT_CHAR},
+                {"litstr", TokenCategory.LIT_STR},
                 {"Plus", TokenCategory.PLUS},
                 {"Times", TokenCategory.TIMES},
                 {"Open_Par", TokenCategory.OPEN_PAR},
@@ -138,14 +138,14 @@ namespace Hydra_compiler
                 } else if (m.Groups["WhiteSpace"].Success
                     || m.Groups["Comment"].Success) {
                     // Skip white space and comments.
-                } else if (m.Groups["Identifier"].Success) {
+                } else if (m.Groups["ID"].Success) {
 
                     if (keywords.ContainsKey(m.Value)) {
                         // Matched string is a Buttercup keyword.
                         yield return newTok(m, keywords[m.Value]);
                     } else {
                         // Otherwise it's just a plain identifier.
-                        yield return newTok(m, TokenCategory.IDENTIFIER);
+                        yield return newTok(m, TokenCategory.ID);
                     }
                 } else if (m.Groups["Other"].Success) {
                     // Found an illegal character.
@@ -160,7 +160,7 @@ namespace Hydra_compiler
                     }
                 }
             }
-            yield return new Token(TokenCategory.EOF,null,row,input.Length - columnStart + 1);
+            yield return new Token(TokenCategory.EOF,null,row,input.Length - columnStart);
         }
 
 
