@@ -7,8 +7,6 @@ namespace Hydra_compiler
 {
     public class Scanner
     {
-        // | (?<False>           false     )
-        //       | (?<True>            true      )
         static readonly Regex regex =  new Regex(
             @"
                 (?<And>             [&][&]    )
@@ -162,10 +160,5 @@ namespace Hydra_compiler
             }
             yield return new Token(TokenCategory.EOF,null,row,input.Length - columnStart);
         }
-
-
-
-
-
     }
 }
