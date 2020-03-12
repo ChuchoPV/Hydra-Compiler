@@ -30,13 +30,13 @@ namespace Hydra_compiler
             @"
                 (?<And>             [&][&]    )
               | (?<Or>              [|][|]    )
-              | (?<BlockComment>    (\/\*(\*(?!\/)|[^*])*\*\/) ) 
+              | (?<BlockComment>    [/][*](.|\n)*?[*][/]) #[/][*]([*](?![/])|[^*])*[*][/] 
               | (?<Comment>         [/][/].*  )
-              | (?<EOL>             [;]       )
+              | (?<Semicolon>       [;]       )
               | (?<Comma>           [,]       )
               | (?<ID>              [a-zA-Z]\w* )   
-              | (?<litchar>         (['].['])|([\\][nrt'""\\])|([\\][u][a-fA-f0-9]{6}))
-              | (?<litstr>          [""]([^\\""]|[\\].)*[""] )
+              | (?<litchar>         '( \\n | \\r | \\t | \\' | \\"" | \\\\ | \\u[\da-fA-F]{6} | [^'\n\r\t\\])' )
+              | (?<litstr>          ""( \\n | \\r | \\t | \\"" | \\\\ | \\u[\da-fA-F]{6} | [^""\n\r\t\\])*"" )
               | (?<litint>          \d+       )
               | (?<PlusPlus>        [+][+]    )
               | (?<LessLess>        [-][-]    )
@@ -83,18 +83,6 @@ namespace Hydra_compiler
                 {"true", TokenCategory.TRUE},
                 {"var", TokenCategory.VAR},
                 {"while", TokenCategory.WHILE},
-                {"main", TokenCategory.MAIN},
-                {"printi", TokenCategory.PRINTI},
-                {"printc", TokenCategory.PRINTC},
-                {"prints", TokenCategory.PRINTS},
-                {"println", TokenCategory.PRINTLN},
-                {"readi", TokenCategory.READI},
-                {"reads", TokenCategory.READS},
-                {"new", TokenCategory.NEW},
-                {"size", TokenCategory.SIZE},
-                {"add", TokenCategory.ADD},
-                {"get", TokenCategory.GET},
-                {"set", TokenCategory.SET}
             };
 
         static readonly IDictionary<string, TokenCategory> nonKeywords =
@@ -127,7 +115,7 @@ namespace Hydra_compiler
                 {"Open_Brac", TokenCategory.OPEN_BRAC},
                 {"Close_Brac", TokenCategory.CLOSE_BRAC},
                 {"Assign", TokenCategory.ASSIGN},
-                {"EOL", TokenCategory.EOL},
+                {"Semicolon", TokenCategory.SEMICOLON},
                 {"Comma", TokenCategory.COMMA},
                 
             };

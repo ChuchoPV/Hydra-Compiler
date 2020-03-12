@@ -12,6 +12,7 @@ main() {
     seven = 7;
     var test = 0;
     test += 5;
+    var char = '\''
     answer = six * seven;
     prints("The answer to the ultimate question of life, ");
     prints("the universe, and everything: ");

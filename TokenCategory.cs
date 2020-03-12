@@ -21,12 +21,12 @@ namespace Hydra_compiler
     public enum TokenCategory
     {
         //Keywords
-        BREAK, ELIF, ELSE, FALSE, IF, RETURN, TRUE, VAR, WHILE, MAIN, PRINTI, PRINTC, PRINTS, PRINTLN, READI, READS,
-        NEW, SIZE, ADD, GET, SET,
+        // MAIN,
+        BREAK, ELIF, ELSE, FALSE, IF, RETURN, TRUE, VAR, WHILE, 
         //IDENTIFIER
         ID,
         //Extras
-        EOL,EOF, BAD_TOKEN,
+        SEMICOLON,EOF, BAD_TOKEN,
         //LITERALS
         LIT_INT, LIT_CHAR, LIT_STR,
         //Operators
