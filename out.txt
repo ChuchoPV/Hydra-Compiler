@@ -1,5 +1,6 @@
 Hydra compiler, version 0.1
-Copyright © 2020-2020 by Jesús Perea Villegas based in A. Ortiz Buttercup Compiler, ITESM CEM.
+Copyright © 2020-2020 Ariel Ortiz, ITESM CEM
+modified by: Jesús Perea, Jorge López, Gerardo Galván.
 This program is free software; you may redistribute it under the terms of
 the GNU General Public License version 3 or later.
 This program has absolutely no warranty.

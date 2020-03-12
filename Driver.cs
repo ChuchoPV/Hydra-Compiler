@@ -1,3 +1,22 @@
+/*
+  Hydra compiler - Program driver.
+  Copyright (C) 2013-2020 Ariel Ortiz, ITESM CEM
+  modified by: Jesús Perea, Jorge López, Gerardo Galván.
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 using System;
 using System.IO;
 
@@ -15,8 +34,7 @@ namespace Hydra_compiler
         //-----------------------------------------------------------
         void PrintAppHeader() {
             Console.WriteLine("Hydra compiler, version " + VERSION);
-            Console.WriteLine("Copyright \u00A9 2020-2020 by Jesús Perea Villegas based in A. Ortiz Buttercup Compiler, ITESM CEM."
-            );
+            Console.WriteLine("Copyright \u00A9 2020-2020 Ariel Ortiz, ITESM CEM\nmodified by: Jesús Perea, Jorge López, Gerardo Galván.");
             Console.WriteLine("This program is free software; you may "
                 + "redistribute it under the terms of");
             Console.WriteLine("the GNU General Public License version 3 or "
