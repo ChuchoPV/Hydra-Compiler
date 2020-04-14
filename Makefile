@@ -1,5 +1,8 @@
-hydra.exe: Driver.cs Scanner.cs Token.cs TokenCategory.cs
-	mcs -out:hydra.exe Driver.cs Scanner.cs Token.cs TokenCategory.cs
+hydra.exe: Driver.cs Scanner.cs Token.cs TokenCategory.cs Parser.cs \
+	SyntaxError.cs
 
-clean: 
+	mcs -out:hydra.exe Driver.cs Scanner.cs Token.cs TokenCategory.cs \
+	Parser.cs SyntaxError.cs
+
+clean:
 	rm hydra.exe

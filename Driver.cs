@@ -24,11 +24,12 @@ namespace Hydra_compiler
 {
     public class Driver
     {
-        const string VERSION = "0.1";
+        const string VERSION = "0.2";
 
         //-----------------------------------------------------------
         static readonly string[] ReleaseIncludes = {
-            "Lexical analysis"
+            "Lexical analysis",
+            "Syntactic analysis"
         };
 
         //-----------------------------------------------------------
@@ -64,21 +65,29 @@ namespace Hydra_compiler
                Environment.Exit(1);
             }
 
-            try {
-                var inputPath = args[0];
-                var input = File.ReadAllText(inputPath);
+            if( args.Length == 1){
+                try {
+                    var inputPath = args[0];
+                    var input = File.ReadAllText(inputPath);
+                    var parser = new Parser(new Scanner(input).Start().GetEnumerator());
+                    parser.Prog();
+                    Console.WriteLine("Syntax OK.");
 
-                Console.WriteLine(String.Format(
-                    "===== Tokens from: \"{0}\" =====", inputPath)
-                );
-                var count = 1;
-                foreach (var tok in new Scanner(input).Start()) {
-                    Console.WriteLine($"[{count++}] {tok}");
+                } catch (Exception e) {
+
+                    if (e is FileNotFoundException || e is SyntaxError) {
+                        Console.Error.WriteLine(e.Message);
+                        Environment.Exit(1);
+                    }
+
+                    throw;
                 }
-
-            } catch (FileNotFoundException e) {
-                Console.Error.WriteLine(e.Message);
-                Environment.Exit(1);
+            }else{
+                Console.Write("> ");
+                var input = Console.ReadLine();
+                var parser = new Parser(new Scanner(input).Start().GetEnumerator());
+                parser.Prog();
+                Console.WriteLine("Syntax OK.");
             }
         }
 
