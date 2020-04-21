@@ -7,7 +7,7 @@
 var six, seven;
 
 main() {
-    var answer;
+    var answer = ;
     six = 6;
     seven = 7;
     var test = 0;
