@@ -1,5 +1,5 @@
 /*
-  Hydra compiler - Token class for the scanner.
+  Hydra compiler - Token class for the Syntax Error.
   Copyright (C) 2013-2020 Ariel Ortiz, ITESM CEM,
   Modified by: Gerardo Galván, Jesús Perea, Jorge López.
 
