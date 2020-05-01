@@ -1,0 +1,11 @@
+
+var x,y; 
+
+main(x){ 
+  var z = x + y;
+  z = 3;
+  z++;
+  z += 34;
+  printi(z);
+  return 5;
+}

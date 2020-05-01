@@ -24,12 +24,13 @@ namespace Hydra_compiler
 {
     public class Driver
     {
-        const string VERSION = "0.2";
+        const string VERSION = "0.3";
 
         //-----------------------------------------------------------
         static readonly string[] ReleaseIncludes = {
             "Lexical analysis",
-            "Syntactic analysis"
+            "Syntactic analysis",
+            "AST construction"
         };
 
         //-----------------------------------------------------------
@@ -59,19 +60,19 @@ namespace Hydra_compiler
             PrintReleaseIncludes();
             Console.WriteLine();
 
-            if (args.Length != 1) {
-               Console.Error.WriteLine(
-                   "Please specify the name of the input file.");
-               Environment.Exit(1);
-            }
+            // if (args.Length != 1) {
+            //    Console.Error.WriteLine(
+            //        "Please specify the name of the input file.");
+            //    Environment.Exit(1);
+            // }
 
-            if( args.Length == 1){
+            if (args.Length == 1){
                 try {
                     var inputPath = args[0];
                     var input = File.ReadAllText(inputPath);
                     var parser = new Parser(new Scanner(input).Start().GetEnumerator());
-                    parser.Prog();
-                    Console.WriteLine("Syntax OK.");
+                    var program = parser.Prog();
+                    Console.WriteLine(program.ToStringTree());
 
                 } catch (Exception e) {
 
@@ -83,11 +84,12 @@ namespace Hydra_compiler
                     throw;
                 }
             }else{
-                Console.Write("> ");
-                var input = Console.ReadLine();
+                // Console.Write("> ");
+                // var input = Console.ReadLine();
+                var input = File.ReadAllText("code_samples/000_test.hydra");
                 var parser = new Parser(new Scanner(input).Start().GetEnumerator());
-                parser.Prog();
-                Console.WriteLine("Syntax OK.");
+                var program = parser.Prog();
+                Console.WriteLine(program.ToStringTree());
             }
         }
 
