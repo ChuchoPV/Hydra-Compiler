@@ -10,7 +10,7 @@ main() {
     var answer;
     six = 6;
     seven = 7;
-    answer = six * seven;
+    answer = -six * seven;
     var y = -5;
     prints("The answer to the ultimate question of life, ");
     prints("the universe, and everything: ");

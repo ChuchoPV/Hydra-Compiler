@@ -47,23 +47,21 @@ namespace Hydra_compiler {
   class EmptyStatement : Node { }
 
   class ExpressionList : Node { }
-  class Expression : Node { }
-  class ExpressionOr : Node { }
-  class ExpressionAnd : Node { }
-  class ExpressionEqualTo : Node { }
-  class ExpressionNotEqualTo : Node { }
-  class ExpressionLess: Node { }
-  class ExpressionLessEqual: Node { }
-  class ExpressionGreater: Node { }
-  class ExpressionGreaterEqual: Node { }
+  class Or : Node { }
+  class And : Node { }
+  class EqualTo : Node { }
+  class NotEqualTo : Node { }
+  class LessThan: Node { }
+  class LessGreaterThan: Node { }
+  class GreaterThan: Node { }
+  class GreaterEqualThan: Node { }
   
   class Plus : Node { }
-  class Less : Node { }  
+  class Subtraction : Node { }  
   class Neg : Node { }
   class Times : Node { }
   class Divide : Node { }
   class Modulo : Node { }
-  class UnaryOperation : Node { }
   class Not : Node { }
 
   class Identifier : Node { }

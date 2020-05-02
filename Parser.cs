@@ -110,16 +110,18 @@ namespace Hydra_compiler {
       return vardeflist;
     }
     public void IdList (Node vardeflist) {
-      var identifier = new Identifier () {
-        AnchorToken = Expect (TokenCategory.ID)
-      };
+      var id = Expect (TokenCategory.ID);
       if (Current == TokenCategory.ASSIGN) {
         Expect (TokenCategory.ASSIGN);
-        var assignment = new Assignment();
-        assignment.Add(identifier);
+        var assignment = new Assignment(){
+          AnchorToken = id
+        };
         assignment.Add(Expr ());
         vardeflist.Add (assignment);
       }else{
+        Node identifier = new Identifier () {
+          AnchorToken = id
+        };
         vardeflist.Add (identifier);
       }
       while (Current == TokenCategory.COMMA) {
@@ -213,10 +215,9 @@ namespace Hydra_compiler {
       switch (Current) {
         case TokenCategory.ASSIGN:
           Expect (TokenCategory.ASSIGN);
-          var expr = new Assignment ();
-          expr.Add(new Identifier(){
+          var expr = new Assignment (){
             AnchorToken = id
-          });
+          };
           expr.Add (Expr ());
           return expr;
         case TokenCategory.PLUSPLUS:
@@ -260,17 +261,15 @@ namespace Hydra_compiler {
         AnchorToken = id
       };
       Expect (TokenCategory.OPEN_PAR);
-      functionCall.Add(ExprList ());
+      ExprList (functionCall);
       Expect (TokenCategory.CLOSE_PAR);
       return functionCall;
     }
-    public Node ExprList () {
-      var expressionList = new ExpressionList();
+    public void ExprList (Node functionCall) {
       if (firstOfExpression.Contains (Current)) {
-        expressionList.Add(Expr ());
-        ExprListCont (expressionList);
+        functionCall.Add(Expr ());
+        ExprListCont (functionCall);
       }
-      return expressionList;
     }
     public void ExprListCont (Node expressionList) {
       while (Current == TokenCategory.COMMA) {
@@ -330,15 +329,13 @@ namespace Hydra_compiler {
     }
 
     public Node Expr () {
-      var expression = new Expression();
-      expression.Add(ExprOr());
-      return expression;
+      return ExprOr();
     }
     public Node ExprOr () {
       Node expr = ExprAnd();
       while (Current == TokenCategory.OR) {
         Expect (TokenCategory.OR);
-        var exprOr = new ExpressionOr();
+        var exprOr = new Or();
         exprOr.Add(expr);
         exprOr.Add(ExprAnd ());
         expr = exprOr;
@@ -349,7 +346,7 @@ namespace Hydra_compiler {
       Node expr = ExprComp();
       while (Current == TokenCategory.AND) {
         Expect (TokenCategory.AND);
-        var exprAnd = new ExpressionAnd();
+        var exprAnd = new And();
         exprAnd.Add(expr);
         exprAnd.Add(ExprComp ());
         expr = exprAnd;
@@ -363,11 +360,11 @@ namespace Hydra_compiler {
         switch (Current) {
           case TokenCategory.EQUALTO:
             Expect (TokenCategory.EQUALTO);
-            expr2 = new ExpressionEqualTo();
+            expr2 = new EqualTo();
             break;
           case TokenCategory.NOTEQUALTO:
             Expect (TokenCategory.NOTEQUALTO);
-            expr2 = new ExpressionNotEqualTo();
+            expr2 = new NotEqualTo();
             break;
           default:
             throw new SyntaxError (new HashSet<TokenCategory> () { TokenCategory.EQUALTO, TokenCategory.NOTEQUALTO }, tokenStream.Current);
@@ -387,19 +384,19 @@ namespace Hydra_compiler {
         switch (Current) {
           case TokenCategory.LESS:
             Expect (TokenCategory.LESS);
-            expr2 = new ExpressionLess();
+            expr2 = new LessThan();
             break;
           case TokenCategory.LESSEQUAL:
             Expect (TokenCategory.LESSEQUAL);
-            expr2 = new ExpressionLessEqual();
+            expr2 = new LessGreaterThan();
             break;
           case TokenCategory.GREATER:
             Expect (TokenCategory.GREATER);
-            expr2 = new ExpressionGreater();
+            expr2 = new GreaterThan();
             break;
           case TokenCategory.GREATEREQUAL:
             Expect (TokenCategory.GREATEREQUAL);
-            expr2 = new ExpressionGreaterEqual();
+            expr2 = new GreaterEqualThan();
             break;
           default:
             throw new SyntaxError (new HashSet<TokenCategory> () {
@@ -424,7 +421,7 @@ namespace Hydra_compiler {
             break;
           case TokenCategory.NEG:
             Expect (TokenCategory.NEG);
-            expr2 = new Less();
+            expr2 = new Subtraction();
             break;
           default:
             throw new SyntaxError (new HashSet<TokenCategory> () {
@@ -473,8 +470,7 @@ namespace Hydra_compiler {
         case TokenCategory.PLUS:
         case TokenCategory.NEG:
         case TokenCategory.NOT:
-          var opunary = new UnaryOperation();
-          opunary.Add(OpUnary ());
+          var opunary = OpUnary ();
           opunary.Add(ExprUnary ());
           return opunary;
         case TokenCategory.ID:
@@ -555,7 +551,7 @@ namespace Hydra_compiler {
     public Node Array () {
       var array = new Array ();
       Expect (TokenCategory.OPEN_BRAC);
-      ExprList ();
+      ExprList (array);
       Expect (TokenCategory.CLOSE_BRAC);
       return array;
     }
