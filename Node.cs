@@ -39,6 +39,10 @@ namespace Hydra_compiler {
             children.Add(node);
         }
 
+        public int Count(){
+            return children.Count;
+        }
+
         public IEnumerator<Node> GetEnumerator() {
             return children.GetEnumerator();
         }

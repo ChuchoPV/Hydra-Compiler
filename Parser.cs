@@ -287,12 +287,20 @@ namespace Hydra_compiler {
       Expect (TokenCategory.OPEN_CURLY);
       ifNode.Add (StmtList ());
       Expect (TokenCategory.CLOSE_CURLY);
-      ifNode.Add (ElseIfList ());
-      ifNode.Add (Else ());
+      // var elifNode = ElseIfList();
+      // if(elifNode.Count() != 0){
+      //   ifNode.Add(elifNode);
+      // }
+      // var elseNode = Else ();
+      // if(elseNode.Count() != 0){
+      //   ifNode.Add(elseNode);
+      // }
+      ifNode.Add(ElseIfList());
+      ifNode.Add(Else());
       return ifNode;
     }
     public Node ElseIfList () {
-      var eliflist = new ElifList ();
+        var eliflist = new ElifList ();
       while (Current == TokenCategory.ELIF) {
         var elif = new Elif ();
         Expect (TokenCategory.ELIF);
