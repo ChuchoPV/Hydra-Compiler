@@ -52,7 +52,7 @@ namespace Hydra_compiler {
   class EqualTo : Node { }
   class NotEqualTo : Node { }
   class LessThan: Node { }
-  class LessGreaterThan: Node { }
+  class LessEqualThan: Node { }
   class GreaterThan: Node { }
   class GreaterEqualThan: Node { }
   

@@ -195,14 +195,16 @@ namespace Hydra_compiler {
           Expect (TokenCategory.SEMICOLON);
           return breakNode;
         case TokenCategory.RETURN:
-          Expect (TokenCategory.RETURN);
-          var returnNode = new Return ();
+          var returnNode = new Return (){
+            AnchorToken = Expect (TokenCategory.RETURN)
+          };
           returnNode.Add (Expr ());
           Expect (TokenCategory.SEMICOLON);
           return returnNode;
         case TokenCategory.SEMICOLON:
-          var empty = new EmptyStatement ();
-          Expect (TokenCategory.SEMICOLON);
+          var empty = new EmptyStatement (){
+            AnchorToken = Expect (TokenCategory.SEMICOLON)
+          };
           return empty;
         case TokenCategory.VAR:
           return VarDefList ();
@@ -221,30 +223,34 @@ namespace Hydra_compiler {
           expr.Add (Expr ());
           return expr;
         case TokenCategory.PLUSPLUS:
-          Expect (TokenCategory.PLUSPLUS);
-          var plusplus = new PlusPlus ();
+          var plusplus = new PlusPlus (){
+            AnchorToken = Expect (TokenCategory.PLUSPLUS)
+          };
           plusplus.Add (new Identifier () {
             AnchorToken = id
           });
           return plusplus;
         case TokenCategory.LESSLESS:
-          Expect (TokenCategory.LESSLESS);
-          var lessless = new LesLess ();
+          var lessless = new LesLess (){
+            AnchorToken = Expect (TokenCategory.LESSLESS)
+          };
           lessless.Add (new Identifier () {
             AnchorToken = id
           });
           return lessless;
         case TokenCategory.PLUSEQUAL:
-          Expect (TokenCategory.PLUSEQUAL);
-          var plusequal = new PlusEqual ();
+          var plusequal = new PlusEqual (){
+            AnchorToken = Expect (TokenCategory.PLUSEQUAL)
+          };
           plusequal.Add (new Identifier () {
             AnchorToken = id
           });
           plusequal.Add (Expr ());
           return plusequal;
         case TokenCategory.SUBTRACEQUAL:
-          Expect (TokenCategory.SUBTRACEQUAL);
-          var subcequal = new SubtracEqual ();
+          var subcequal = new SubtracEqual (){
+            AnchorToken = Expect (TokenCategory.SUBTRACEQUAL)
+          };
           subcequal.Add (new Identifier () {
             AnchorToken = id
           });
@@ -279,31 +285,31 @@ namespace Hydra_compiler {
       }
     }
     public Node If () {
-      var ifNode = new If ();
-      Expect (TokenCategory.IF);
+      var ifNode = new If (){
+        AnchorToken = Expect (TokenCategory.IF)
+      };
       Expect (TokenCategory.OPEN_PAR);
       ifNode.Add (Expr ());
       Expect (TokenCategory.CLOSE_PAR);
       Expect (TokenCategory.OPEN_CURLY);
       ifNode.Add (StmtList ());
       Expect (TokenCategory.CLOSE_CURLY);
-      // var elifNode = ElseIfList();
-      // if(elifNode.Count() != 0){
-      //   ifNode.Add(elifNode);
-      // }
-      // var elseNode = Else ();
-      // if(elseNode.Count() != 0){
-      //   ifNode.Add(elseNode);
-      // }
-      ifNode.Add(ElseIfList());
-      ifNode.Add(Else());
+      var elifNode = ElseIfList();
+      if(elifNode.Count() != 0){
+        ifNode.Add(elifNode);
+      }
+      var elseNode = Else ();
+      if(elseNode.Count() != 0){
+        ifNode.Add(elseNode);
+      }
       return ifNode;
     }
     public Node ElseIfList () {
-        var eliflist = new ElifList ();
+      var eliflist = new ElifList ();
       while (Current == TokenCategory.ELIF) {
-        var elif = new Elif ();
-        Expect (TokenCategory.ELIF);
+        var elif = new Elif (){
+          AnchorToken = Expect (TokenCategory.ELIF)
+        };
         Expect (TokenCategory.OPEN_PAR);
         elif.Add (Expr ());
         Expect (TokenCategory.CLOSE_PAR);
@@ -317,7 +323,7 @@ namespace Hydra_compiler {
     public Node Else () {
       var elseNode = new Else ();
       if (Current == TokenCategory.ELSE) {
-        Expect (TokenCategory.ELSE);
+        elseNode.AnchorToken = Expect (TokenCategory.ELSE);
         Expect (TokenCategory.OPEN_CURLY);
         elseNode.Add (StmtList ());
         Expect (TokenCategory.CLOSE_CURLY);
@@ -325,9 +331,10 @@ namespace Hydra_compiler {
       return elseNode;
     }
     public Node While () {
-      Expect (TokenCategory.WHILE);
+      var whileNode = new While (){
+        AnchorToken = Expect (TokenCategory.WHILE)
+      };
       Expect (TokenCategory.OPEN_PAR);
-      var whileNode = new While ();
       whileNode.Add (Expr ());
       Expect (TokenCategory.CLOSE_PAR);
       Expect (TokenCategory.OPEN_CURLY);
@@ -342,8 +349,9 @@ namespace Hydra_compiler {
     public Node ExprOr () {
       Node expr = ExprAnd();
       while (Current == TokenCategory.OR) {
-        Expect (TokenCategory.OR);
-        var exprOr = new Or();
+        var exprOr = new Or(){
+          AnchorToken = Expect (TokenCategory.OR)
+        };
         exprOr.Add(expr);
         exprOr.Add(ExprAnd ());
         expr = exprOr;
@@ -353,8 +361,9 @@ namespace Hydra_compiler {
     public Node ExprAnd () {
       Node expr = ExprComp();
       while (Current == TokenCategory.AND) {
-        Expect (TokenCategory.AND);
-        var exprAnd = new And();
+        var exprAnd = new And(){
+          AnchorToken = Expect (TokenCategory.AND)
+        };
         exprAnd.Add(expr);
         exprAnd.Add(ExprComp ());
         expr = exprAnd;
@@ -367,12 +376,14 @@ namespace Hydra_compiler {
       while (Current == TokenCategory.EQUALTO || Current == TokenCategory.NOTEQUALTO) {
         switch (Current) {
           case TokenCategory.EQUALTO:
-            Expect (TokenCategory.EQUALTO);
-            expr2 = new EqualTo();
+            expr2 = new EqualTo(){
+              AnchorToken = Expect (TokenCategory.EQUALTO)
+            };
             break;
           case TokenCategory.NOTEQUALTO:
-            Expect (TokenCategory.NOTEQUALTO);
-            expr2 = new NotEqualTo();
+            expr2 = new NotEqualTo(){
+              AnchorToken = Expect (TokenCategory.NOTEQUALTO)
+            };
             break;
           default:
             throw new SyntaxError (new HashSet<TokenCategory> () { TokenCategory.EQUALTO, TokenCategory.NOTEQUALTO }, tokenStream.Current);
@@ -391,20 +402,24 @@ namespace Hydra_compiler {
       ) {
         switch (Current) {
           case TokenCategory.LESS:
-            Expect (TokenCategory.LESS);
-            expr2 = new LessThan();
+            expr2 = new LessThan(){
+              AnchorToken = Expect (TokenCategory.LESS)
+            };
             break;
           case TokenCategory.LESSEQUAL:
-            Expect (TokenCategory.LESSEQUAL);
-            expr2 = new LessGreaterThan();
+            expr2 = new LessEqualThan(){
+              AnchorToken = Expect (TokenCategory.LESSEQUAL)
+            };
             break;
           case TokenCategory.GREATER:
-            Expect (TokenCategory.GREATER);
-            expr2 = new GreaterThan();
+            expr2 = new GreaterThan(){
+              AnchorToken = Expect (TokenCategory.GREATER)
+            };
             break;
           case TokenCategory.GREATEREQUAL:
-            Expect (TokenCategory.GREATEREQUAL);
-            expr2 = new GreaterEqualThan();
+            expr2 = new GreaterEqualThan(){
+              AnchorToken = Expect (TokenCategory.GREATEREQUAL)
+            };
             break;
           default:
             throw new SyntaxError (new HashSet<TokenCategory> () {
@@ -424,12 +439,14 @@ namespace Hydra_compiler {
       while (Current == TokenCategory.PLUS || Current == TokenCategory.NEG) {
         switch (Current) {
           case TokenCategory.PLUS:
-            Expect (TokenCategory.PLUS);
-            expr2 = new Plus();
+            expr2 = new Plus(){
+              AnchorToken = Expect (TokenCategory.PLUS)
+            };
             break;
           case TokenCategory.NEG:
-            Expect (TokenCategory.NEG);
-            expr2 = new Subtraction();
+            expr2 = new Subtraction(){
+              AnchorToken = Expect (TokenCategory.NEG)
+            };
             break;
           default:
             throw new SyntaxError (new HashSet<TokenCategory> () {
@@ -450,16 +467,19 @@ namespace Hydra_compiler {
       ) {
         switch (Current) {
           case TokenCategory.TIMES:
-            Expect (TokenCategory.TIMES);
-            expr2 = new Times();
+            expr2 = new Times(){
+              AnchorToken = Expect (TokenCategory.TIMES)
+            };
             break;
           case TokenCategory.DIV:
-            Expect (TokenCategory.DIV);
-            expr2 = new Divide();
+            expr2 = new Divide(){
+              AnchorToken = Expect (TokenCategory.DIV)
+            };
             break;
           case TokenCategory.MOD:
-            Expect (TokenCategory.MOD);
-            expr2 = new Modulo();
+            expr2 = new Modulo(){
+              AnchorToken = Expect (TokenCategory.MOD)
+            };
             break;
           default:
             throw new SyntaxError (new HashSet<TokenCategory> () {
