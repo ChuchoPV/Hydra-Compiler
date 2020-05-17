@@ -1,10 +1,12 @@
 
 var x,y; 
 
-main(x){ 
+main(x){
+  var y, x; 
   var z = x + y;
   z = 3;
   z++;
+  var c,v = 9;
   z += 34;
   printi(z);
   return 5;

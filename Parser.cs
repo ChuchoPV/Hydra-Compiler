@@ -143,7 +143,7 @@ namespace Hydra_compiler {
       Expect (TokenCategory.CLOSE_PAR);
 
       Expect (TokenCategory.OPEN_CURLY);
-      fundef.Add (VarDefList ());
+      fundef.Add (VarDefList());
       fundef.Add (StmtList ());
       Expect (TokenCategory.CLOSE_CURLY);
       return fundef;
@@ -163,12 +163,14 @@ namespace Hydra_compiler {
         RestIDParamList (idParamList);
       }
     }
-    public Node VarDefList () {
-      Node vardeflist = new VariableDefinitionList ();
-      while (Current == TokenCategory.VAR) {
-        vardeflist = VarDef ();
+    public Node VarDefList() {
+      var vardefList = VarDef ();
+      while(Current == TokenCategory.VAR){
+        Expect (TokenCategory.VAR);
+        IdList (vardefList);
+        Expect (TokenCategory.SEMICOLON);
       }
-      return vardeflist;
+      return vardefList;
     }
 
     public Node StmtList () {
@@ -207,7 +209,7 @@ namespace Hydra_compiler {
           };
           return empty;
         case TokenCategory.VAR:
-          return VarDefList ();
+          return VarDefList();
         default:
           throw new SyntaxError (firstOfStatement, tokenStream.Current);
       }
