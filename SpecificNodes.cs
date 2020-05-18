@@ -33,7 +33,7 @@ namespace Hydra_compiler {
 
   class Assignment : Node { }
   class PlusPlus : Node { }
-  class LesLess : Node { }
+  class LessLess : Node { }
   class PlusEqual : Node { }
   class SubtracEqual : Node { }
   class FunctionCall : Node { }

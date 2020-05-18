@@ -1,13 +1,39 @@
-
-var x,y; 
+var x, main;
 
 main(x){
-  var y, x; 
-  var z = x + y;
-  z = 3;
+  return x;
+  var y; 
+  var w;
+  var z = w + x - - y / 5 * 6 % 9;
+  z = y == z;
   z++;
+  w--;
   var c,v = 9;
   z += 34;
-  printi(z);
+  w -= 10;
+  fun(z,w);
+  if(y == z && true || false && 9){
+    var temp = 0;
+    temp += z;
+    z = temp;
+    w++;
+    fun(z,w);
+  }elif(true && false){
+    var some = x;
+  }else{
+    x++;
+  }
+  x = 0;
+  while(x != 10){
+    x++;
+    while(true){
+      if(x == 5){
+        break;
+        x++;
+      }
+    }
+  }
   return 5;
 }
+
+fun(x,y){ }

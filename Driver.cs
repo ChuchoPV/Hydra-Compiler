@@ -92,17 +92,24 @@ namespace Hydra_compiler {
         }
       } else {
         try {
-          Console.Write ("> ");
+          // Console.Write ("> ");
           // var input = Console.ReadLine ();
-          var input = File.ReadAllText("code_samples/000_test.hydra");
+          var input = File.ReadAllText ("code_samples/000_test.hydra");
           var parser = new Parser (new Scanner (input).Start ().GetEnumerator ());
           var program = parser.Prog ();
-          Console.WriteLine (program.ToStringTree ());
+          // Console.WriteLine (program.ToStringTree ());
           var semantic = new SemanticAnalyzer ();
           semantic.isFirstPass = true;
           semantic.Visit ((dynamic) program);
           semantic.isFirstPass = false;
           semantic.Visit ((dynamic) program);
+
+          if (!semantic.GlobalFunctions.Contains ("main")) {
+            throw new SemanticError (
+              "The main function was not found",
+              "000_test.hydra"
+            );
+          }
 
           Console.WriteLine ("Semantics OK.");
           Console.WriteLine ();

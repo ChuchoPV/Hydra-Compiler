@@ -21,11 +21,14 @@ using System;
 
 namespace Hydra_compiler {
 
-    class SemanticError: Exception {
+    class SemanticError : Exception {
 
-        public SemanticError(string message, Token token):
-            base($"Semantic Error: {message} \n"
-                 + $"at row {token.Row}, column {token.Column}.") {
-        }
+        public SemanticError (string message, Token token):
+            base ($"Semantic Error: {message} \n" +
+                $"at row {token.Row}, column {token.Column}.") { }
+
+        public SemanticError (string message, string filename):
+            base ($"Semantic Error: {message} " +
+                $"at {filename}") { }
     }
 }

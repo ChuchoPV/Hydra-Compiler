@@ -104,9 +104,11 @@ namespace Hydra_compiler {
 
     public Node VarDef () {
       var vardeflist = new VariableDefinitionList ();
-      Expect (TokenCategory.VAR);
-      IdList (vardeflist);
-      Expect (TokenCategory.SEMICOLON);
+      while(Current == TokenCategory.VAR){
+        Expect (TokenCategory.VAR);
+        IdList (vardeflist);
+        Expect (TokenCategory.SEMICOLON);
+      }
       return vardeflist;
     }
     public void IdList (Node vardeflist) {
@@ -233,7 +235,7 @@ namespace Hydra_compiler {
           });
           return plusplus;
         case TokenCategory.LESSLESS:
-          var lessless = new LesLess (){
+          var lessless = new LessLess (){
             AnchorToken = Expect (TokenCategory.LESSLESS)
           };
           lessless.Add (new Identifier () {

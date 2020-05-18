@@ -110,17 +110,23 @@ namespace Hydra_compiler {
 
     public override string ToString () {
       var sb = new StringBuilder ();
-      sb.Append ("\tIsPrimitive   |   Arity    |   Symbol Table\n");
-      sb.Append ("\t=========================================\n");
-      sb.Append ($"\t{this.isPrimitive}\t|\t{this.arity}\t|\t{this.RefST}\n");
-      sb.Append ("\t=========================================\n");
+      sb.Append ("\tIsPrimitive   |   Arity\n");
+      sb.Append ("\t========================\n");
+      sb.Append ($"\t{this.isPrimitive}\t      |     {this.arity}\t\n");
+      sb.Append ("\t------------------------\n\n");
+      sb.Append($"{this.RefST}");
+      sb.Append ("\t========================\n");
       return sb.ToString ();
     }
   }
 
   public class LocalSymbolTable : IEnumerable<KeyValuePair<string, bool>> {
 
+    public LocalSymbolTable(string name){
+      this.name = name;
+    }
     IDictionary<string, bool> data = new SortedDictionary<string, bool> ();
+    public string name;
 
     public IEnumerator<KeyValuePair<string, bool>> GetEnumerator () {
       return data.GetEnumerator ();
@@ -128,13 +134,14 @@ namespace Hydra_compiler {
 
     public override string ToString () {
       var sb = new StringBuilder ();
-      sb.Append ("Local Symbol Table\n");
-      sb.Append (@"Name    |   Is Param");
-      sb.Append ("====================\n");
+      sb.Append ("\tLocal Symbol Table\n");
+      sb.Append ("\t====================\n");
+      sb.Append ("\tName  |  Is Param\n");
+      sb.Append ("\t====================\n");
       foreach (var entry in data) {
-        sb.Append ($"{entry.Key}: {entry.Value}\n");
-      }
-      sb.Append ("====================\n");
+        sb.Append ($"\t{entry.Key}     |    {entry.Value}\n");
+      } 
+      sb.Append ("\t====================\n");
       return sb.ToString ();
     }
 

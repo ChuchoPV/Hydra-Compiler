@@ -23,52 +23,84 @@ using System.Text;
 
 namespace Hydra_compiler {
 
-    public class Node: IEnumerable<Node> {
+  public class Node : IEnumerable<Node> {
 
-        IList<Node> children = new List<Node>();
+    IList<Node> children = new List<Node> ();
 
-        public Node this[int index] {
-            get {
-                return children[index];
-            }
-        }
-
-        public Token AnchorToken { get; set; }
-
-        public void Add(Node node) {
-            children.Add(node);
-        }
-
-        public int Count(){
-            return children.Count;
-        }
-
-        public IEnumerator<Node> GetEnumerator() {
-            return children.GetEnumerator();
-        }
-
-        System.Collections.IEnumerator
-                System.Collections.IEnumerable.GetEnumerator() {
-            throw new NotImplementedException();
-        }
-
-        public override string ToString() {
-            return $"{GetType().Name} {AnchorToken}";
-        }
-
-        public string ToStringTree() {
-            var sb = new StringBuilder();
-            TreeTraversal(this, "", sb);
-            return sb.ToString();
-        }
-
-        static void TreeTraversal(Node node, string indent, StringBuilder sb) {
-            sb.Append(indent);
-            sb.Append(node);
-            sb.Append('\n');
-            foreach (var child in node.children) {
-                TreeTraversal(child, indent + "  ", sb);
-            }
-        }
+    public Node this [int index] {
+      get {
+        return children[index];
+      }
     }
+
+    public Token AnchorToken { get; set; }
+
+    public void Add (Node node) {
+      children.Add (node);
+    }
+
+    public int Count () {
+      return children.Count;
+    }
+
+    public void Remove (int index) {
+      children.RemoveAt(index);
+    }
+
+    public void RemoveNodes (int index) {
+      for (var i = this.Count() - 1; i >= index; i--) {
+        this.Remove (i);
+      }
+    }
+
+    public int BreakIndex () {
+      var i = 0;
+      foreach (var child in this) {
+        if (child is Break) {
+          return i;
+        }
+        i++;
+      }
+      return -1;
+    }
+
+    public int ReturnIndex () {
+      var i = 0;
+      foreach (var child in this) {
+        if (child is Return) {
+          return i;
+        }
+        i++;
+      }
+      return -1;
+    }
+
+    public IEnumerator<Node> GetEnumerator () {
+      return children.GetEnumerator ();
+    }
+
+    System.Collections.IEnumerator
+    System.Collections.IEnumerable.GetEnumerator () {
+      throw new NotImplementedException ();
+    }
+
+    public override string ToString () {
+      return $"{GetType().Name} {AnchorToken}";
+    }
+
+    public string ToStringTree () {
+      var sb = new StringBuilder ();
+      TreeTraversal (this, "", sb);
+      return sb.ToString ();
+    }
+
+    static void TreeTraversal (Node node, string indent, StringBuilder sb) {
+      sb.Append (indent);
+      sb.Append (node);
+      sb.Append ('\n');
+      foreach (var child in node.children) {
+        TreeTraversal (child, indent + "  ", sb);
+      }
+    }
+  }
 }
