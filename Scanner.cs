@@ -1,22 +1,3 @@
-/*
-  Hydra compiler - This class performs the lexical analysis,
-  (a.k.a. scanning).
-  Copyright (C) 2013 Ariel Ortiz, ITESM CEM
-  Modified by: Jorge López, Gerardo Galván, Jesús Perea.
-
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,7 +7,7 @@ namespace Hydra_compiler
 {
     public class Scanner
     {
-        static readonly Regex regex =  new Regex(
+        static readonly Regex regex = new Regex(
             @"
                 (?<And>             [&][&]    )
               | (?<Or>              [|][|]    )
@@ -117,14 +98,16 @@ namespace Hydra_compiler
                 {"Assign", TokenCategory.ASSIGN},
                 {"Semicolon", TokenCategory.SEMICOLON},
                 {"Comma", TokenCategory.COMMA},
-                
+
             };
 
-        public Scanner(string input) {
+        public Scanner(string input)
+        {
             this.input = input;
         }
 
-        public IEnumerable<Token> Start() {
+        public IEnumerable<Token> Start()
+        {
 
             var row = 1;
             var columnStart = 0;
@@ -132,40 +115,57 @@ namespace Hydra_compiler
             Func<Match, TokenCategory, Token> newTok = (m, tc) =>
                 new Token(tc, m.Value, row, m.Index - columnStart + 1);
 
-            foreach (Match m in regex.Matches(input)) {
+            foreach (Match m in regex.Matches(input))
+            {
 
-                if (m.Groups["Newline"].Success) {
+                if (m.Groups["Newline"].Success)
+                {
                     // Found a new line.
                     row++;
                     columnStart = m.Index + m.Length;
-                } else if(m.Groups["BlockComment"].Success){
-                    row+=m.Value.Split('\n').Length - 1;
-                } else if (m.Groups["WhiteSpace"].Success
-                    || m.Groups["Comment"].Success) {
+                }
+                else if (m.Groups["BlockComment"].Success)
+                {
+                    row += m.Value.Split('\n').Length - 1;
+                }
+                else if (m.Groups["WhiteSpace"].Success
+                  || m.Groups["Comment"].Success)
+                {
                     // Skip white space and comments.
-                } else if (m.Groups["ID"].Success) {
+                }
+                else if (m.Groups["ID"].Success)
+                {
 
-                    if (keywords.ContainsKey(m.Value)) {
+                    if (keywords.ContainsKey(m.Value))
+                    {
                         // Matched string is a Buttercup keyword.
                         yield return newTok(m, keywords[m.Value]);
-                    } else {
+                    }
+                    else
+                    {
                         // Otherwise it's just a plain identifier.
                         yield return newTok(m, TokenCategory.ID);
                     }
-                } else if (m.Groups["Other"].Success) {
+                }
+                else if (m.Groups["Other"].Success)
+                {
                     // Found an illegal character.
                     yield return newTok(m, TokenCategory.BAD_TOKEN);
-                } else {
+                }
+                else
+                {
                     // Match must be one of the non keywords.
-                    foreach (var name in nonKeywords.Keys) {
-                        if (m.Groups[name].Success) {
+                    foreach (var name in nonKeywords.Keys)
+                    {
+                        if (m.Groups[name].Success)
+                        {
                             yield return newTok(m, nonKeywords[name]);
                             break;
                         }
                     }
                 }
             }
-            yield return new Token(TokenCategory.EOF,null,row,input.Length - columnStart);
+            yield return new Token(TokenCategory.EOF, null, row, input.Length - columnStart);
         }
     }
 }
