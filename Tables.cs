@@ -110,11 +110,15 @@ namespace Hydra_compiler {
 
     public override string ToString () {
       var sb = new StringBuilder ();
-      sb.Append ("\tIsPrimitive   |   Arity\n");
+      string hasRefSTString = this.RefST == null ? "   |   Local Symbol Table" : "";
+      sb.Append ($"\n\n\tIsPrimitive   |   Arity{hasRefSTString}\n");
       sb.Append ("\t========================\n");
-      sb.Append ($"\t{this.isPrimitive}\t      |     {this.arity}\t\n");
-      sb.Append ("\t------------------------\n\n");
-      sb.Append($"{this.RefST}");
+      string hasRefSTValue = this.RefST == null ? "\t      |     null" : "";
+      sb.Append ($"\t{this.isPrimitive}\t      |     {this.arity}{hasRefSTValue}\n");
+      if(this.RefST != null){
+        sb.Append ("\t------------------------\n\n");
+        sb.Append($"{this.RefST}");
+      }
       sb.Append ("\t========================\n");
       return sb.ToString ();
     }

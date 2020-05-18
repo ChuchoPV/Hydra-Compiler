@@ -112,7 +112,7 @@ namespace Hydra_compiler {
 
       lookingExistance = true;
       VisitChildren (node);
-      lookingExistance = false;
+      // lookingExistance = false;
     }
 
     public void Visit (Assignment node) {

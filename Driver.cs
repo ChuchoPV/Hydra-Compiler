@@ -51,6 +51,65 @@ namespace Hydra_compiler {
       }
     }
 
+    void SetAPI (SemanticAnalyzer semantic) {
+      semantic.GlobalFunctions["printi"] = new FunctionData () {
+        arity = 1,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["printc"] = new FunctionData () {
+        arity = 1,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["prints"] = new FunctionData () {
+        arity = 1,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["println"] = new FunctionData () {
+        arity = 0,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["readi"] = new FunctionData () {
+        arity = 0,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["reads"] = new FunctionData () {
+        arity = 0,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["new"] = new FunctionData () {
+        arity = 1,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["size"] = new FunctionData () {
+        arity = 1,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["add"] = new FunctionData () {
+        arity = 2,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["get"] = new FunctionData () {
+        arity = 2,
+        isPrimitive = true,
+        RefST = null
+      };
+      semantic.GlobalFunctions["set"] = new FunctionData () {
+        arity = 3,
+        isPrimitive = true,
+        RefST = null
+      };
+
+    }
+
     //-----------------------------------------------------------
     void Run (string[] args) {
 
@@ -59,11 +118,11 @@ namespace Hydra_compiler {
       PrintReleaseIncludes ();
       Console.WriteLine ();
 
-      // if (args.Length != 1) {
-      //    Console.Error.WriteLine(
-      //        "Please specify the name of the input file.");
-      //    Environment.Exit(1);
-      // }
+      if (args.Length != 1) {
+         Console.Error.WriteLine(
+             "Please specify the name of the input file.");
+         Environment.Exit(1);
+      }
 
       if (args.Length == 1) {
         try {
@@ -73,32 +132,7 @@ namespace Hydra_compiler {
           var program = parser.Prog ();
           // Console.WriteLine(program.ToStringTree());
           var semantic = new SemanticAnalyzer ();
-          semantic.Visit ((dynamic) program);
-
-          Console.WriteLine ("Semantics OK.");
-          Console.WriteLine ();
-          Console.WriteLine ("Symbol Table");
-          Console.WriteLine ("============");
-          Console.WriteLine (semantic.GlobalVariables.ToString ());
-
-        } catch (Exception e) {
-
-          if (e is FileNotFoundException || e is SyntaxError) {
-            Console.Error.WriteLine (e.Message);
-            Environment.Exit (1);
-          }
-
-          throw;
-        }
-      } else {
-        try {
-          // Console.Write ("> ");
-          // var input = Console.ReadLine ();
-          var input = File.ReadAllText ("code_samples/000_test.hydra");
-          var parser = new Parser (new Scanner (input).Start ().GetEnumerator ());
-          var program = parser.Prog ();
-          // Console.WriteLine (program.ToStringTree ());
-          var semantic = new SemanticAnalyzer ();
+          SetAPI (semantic);
           semantic.isFirstPass = true;
           semantic.Visit ((dynamic) program);
           semantic.isFirstPass = false;
@@ -107,7 +141,7 @@ namespace Hydra_compiler {
           if (!semantic.GlobalFunctions.Contains ("main")) {
             throw new SemanticError (
               "The main function was not found",
-              "000_test.hydra"
+              new FileInfo (inputPath).FullName
             );
           }
 
@@ -117,6 +151,43 @@ namespace Hydra_compiler {
           Console.WriteLine ("============\n");
           Console.WriteLine (semantic.GlobalVariables.ToString ());
           Console.WriteLine (semantic.GlobalFunctions.ToString ());
+        } catch (Exception e) {
+          if (e is FileNotFoundException || e is SyntaxError || e is SemanticError) {
+            Console.Error.WriteLine (e.Message);
+            Environment.Exit (1);
+          }
+
+          throw;
+        }
+      } else {
+        try {
+          Console.Write ("> ");
+          var input = Console.ReadLine ();
+          // var input = File.ReadAllText ("code_samples/000_test.hydra");
+          var parser = new Parser (new Scanner (input).Start ().GetEnumerator ());
+          var program = parser.Prog ();
+          // Console.WriteLine (program.ToStringTree ());
+          var semantic = new SemanticAnalyzer ();
+          SetAPI (semantic);
+          semantic.isFirstPass = true;
+          semantic.Visit ((dynamic) program);
+          semantic.isFirstPass = false;
+          semantic.Visit ((dynamic) program);
+
+          if (!semantic.GlobalFunctions.Contains ("main")) {
+            throw new SemanticError (
+              "The main function was not found",
+              new FileInfo("code_samples/000_test.hydra").FullName
+            );
+          }
+
+          Console.WriteLine ("Semantics OK.");
+          Console.WriteLine ();
+          Console.WriteLine ("Tables");
+          Console.WriteLine ("============\n");
+          Console.WriteLine (semantic.GlobalVariables.ToString ());
+          Console.WriteLine (semantic.GlobalFunctions.ToString ());
+
         } catch (Exception e) {
           if (e is FileNotFoundException || e is SyntaxError || e is SemanticError) {
             Console.Error.WriteLine (e.Message);
