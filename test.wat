@@ -14,10 +14,60 @@
   (import "hydra" "size" (func $size (param i32) (result i32)))
   (func (export "main") 
 		(result i32)
+		(local $00000 i32)
+		(local $00001 i32)
+    (local $z i32)
     (local $x i32)
-    (local $y i32)
-    i32.const 20
-    local.set $y
+    (local $w i32)
+		i32.const 0
+		call $new
+		local.set $00000
+		local.get $00000
+    i32.const 65
+		call $add
+		drop
+		local.get $00000
+    i32.const 66
+		call $add
+		drop
+		local.get $00000
+    i32.const 67
+		call $add
+		drop
+		local.get $00000
+    i32.const 10
+		call $add
+		drop
+		local.get $00000
+    local.set $z
+		i32.const 0
+		call $new
+		local.set $00001
+		local.get $00001
+		call $fun
+		call $add
+		drop
+		local.get $00001
+    i32.const 3
+		call $add
+		drop
+		local.get $00001
+    i32.const 4
+		call $add
+		drop
+		local.get $00001
+    local.set $x
+		local.get $z
+    i32.const 0
+		call $get
+		local.set $w
+		local.get $w
+		call $printc
+		drop
+		i32.const 0
+	)
+  (func $fun 
+		(result i32)
 		i32.const 0
 	)
 )

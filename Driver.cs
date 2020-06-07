@@ -110,29 +110,6 @@ namespace Hydra_compiler {
       };
 
     }
-    void CreateGlobalVariable (GlobalVariables table) {
-      var result = "module.exports = {\n";
-      int index = 0;
-      foreach (var variable in table) {
-        index++;
-        //'c'
-        //"Hola"
-        int number;
-        var isInt = Int32.TryParse(variable.value, out number);
-
-        result += $"\t{variable.name}" + 
-          " : new WebAssembly.Global({value:'i32', mutable:true}, " + 
-          $"{(isInt ? number : 0)}" +
-          ")";
-        if (index != table.Count) {
-          result += ",\n";
-        } else {
-          result += "\n";
-        }
-      }
-      result += "}\n";
-      File.WriteAllText ("./globals.js", result);
-    }
     //-----------------------------------------------------------
     void Run (string[] args) {
 
@@ -141,11 +118,11 @@ namespace Hydra_compiler {
       PrintReleaseIncludes ();
       Console.WriteLine ();
 
-      if (args.Length != 2) {
-        Console.Error.WriteLine (
-          "Please specify the name of the input file.");
-        Environment.Exit (1);
-      }
+      // if (args.Length != 2) {
+      //   Console.Error.WriteLine (
+      //     "Please specify the name of the input file.");
+      //   Environment.Exit (1);
+      // }
 
       if (args.Length == 2) {
         try {
@@ -169,7 +146,6 @@ namespace Hydra_compiler {
             );
           }
           Console.WriteLine ("Semantics OK.");
-          CreateGlobalVariable (semantic.GlobalVariables);
           var codeGenerator = new WATVisitor (semantic.GlobalVariables, semantic.GlobalFunctions);
           File.WriteAllText (
             outputPath,
@@ -210,7 +186,6 @@ namespace Hydra_compiler {
             );
           }
           Console.WriteLine ("Semantics OK.");
-          CreateGlobalVariable (semantic.GlobalVariables);
           var codeGenerator = new WATVisitor (semantic.GlobalVariables, semantic.GlobalFunctions);
           File.WriteAllText (
             outputPath,

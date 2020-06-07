@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Hydra_compiler {
 
@@ -41,17 +42,43 @@ namespace Hydra_compiler {
     bool inVariableDefinition = false;
     bool inStatement = false;
     int labelCounter = 0;
+    List<String> tempVariables = new List<String>();
 
     public WATVisitor (GlobalVariables globalVariables, GlobalFunctions globalFunctions) {
       this.GlobalFunctions = globalFunctions;
       this.GlobalVariables = globalVariables;
+      labelCounter = 0;
     }
     public string Generatelabel () {
       return $"${labelCounter++:00000}";
     }
+    public (int code, int jumps) Unescape (string str, int i) {
+      //TODO: Pobar unicodes inexistentes
+      var max_code_point = Int32.Parse ("10FFFF", System.Globalization.NumberStyles.HexNumber);
+      if (str[i + 1] == 'u') {
+        return (
+          (
+            Int32.Parse (str.Substring (i + 2, 6), System.Globalization.NumberStyles.HexNumber)
+            %
+            max_code_point
+          ),
+          7
+        );
+      }
+      return (
+        char.ConvertToUtf32 (Regex.Unescape (str), i),
+        1
+      );
+    }
     public IList<int> AsCodePoint (String str) {
       var result = new List<int> (str.Length);
       for (int i = 0; i < str.Length; i++) {
+        if (str[i] == '\\') {
+          var code_jumps = Unescape (str, i);
+          result.Add (code_jumps.code);
+          i += code_jumps.jumps;
+          continue;
+        }
         result.Add (char.ConvertToUtf32 (str, i));
         if (char.IsHighSurrogate (str, i)) {
           i++;
@@ -75,7 +102,11 @@ namespace Hydra_compiler {
     public string ImportGlobals () {
       StringBuilder sb = new StringBuilder ();
       foreach (var varName in GlobalVariables) {
-        sb.Append ($"\t(global ${varName.name} (import \"globals\" \"{varName.name}\") (mut i32))\n");
+        int number;
+        //'c'
+        //"Hola"
+        var isInt = Int32.TryParse (varName.value, out number);
+        sb.Append ($"\t(global ${varName.name} (mut i32) (i32.const {(isInt ? number : 0)}))\n");
       }
       return sb.ToString ();
     }
@@ -112,8 +143,15 @@ namespace Hydra_compiler {
         sb.Append ($"  (func (export \"{functionName}\") ");
       } else {
         sb.Append ($"  (func ${functionName} ");
+      };
+      sb.Append ("\n\t\t(result i32)\n");
+      var body = VisitChildren (node);
+      foreach (var tempVariable in tempVariables)
+      {
+          sb.Append($"\t\t(local {tempVariable} i32)\n");
       }
-      sb.Append (VisitChildren (node));
+      tempVariables = new List<string>();
+      sb.Append(body);
       sb.Append ("\t\ti32.const 0\n\t)\n");
       this.TempLocalSymbolTable = null;
       return sb.ToString ();
@@ -126,7 +164,6 @@ namespace Hydra_compiler {
           sb.Append ($"(param ${param.Key} i32) ");
         }
       }
-      sb.Append ("\n\t\t(result i32)\n");
       return sb.ToString ();
     }
     //-----------------------------------------------------------
@@ -137,13 +174,23 @@ namespace Hydra_compiler {
       return str;
     }
     //-----------------------------------------------------------
+    public string VisitExpression(dynamic node){
+      var str = "";
+      if(node is FunctionCall){
+        str += Visit ((dynamic) node, true);
+      }else{
+        str += Visit ((dynamic) node);
+      }
+      return str;
+    }
+
     public string Visit (Assignment node) {
       var varName = node.AnchorToken.Lexeme;
       if (inVariableDefinition) {
         if (TempLocalSymbolTable != null && TempLocalSymbolTable.Contains (varName)) {
           //I'm creating a new local variable
           //and assigning a value to that local variable
-          tempValueAssignment += Visit ((dynamic) node[0]);
+          tempValueAssignment += VisitExpression(node[0]);
           tempValueAssignment += $"    local.set ${varName}\n";
           return $"    (local ${varName} i32)\n";
         } else {
@@ -155,11 +202,11 @@ namespace Hydra_compiler {
       } else {
         if (TempLocalSymbolTable.Contains (varName)) {
           //I'm ssigning a value to local variable
-          return Visit ((dynamic) node[0]) +
+          return  VisitExpression(node[0]) +
             $"\t\tlocal.set ${varName}\n";
         } else {
           //I'm assigning a value to a global variable
-          return Visit ((dynamic) node[0]) +
+          return VisitExpression(node[0]) +
             $"\t\tglobal.set ${varName}\n";
         }
       }
@@ -193,9 +240,9 @@ namespace Hydra_compiler {
       return str;
     }
     //-----------------------------------------------------------
-    public string Visit (PlusEqual node){
-      var str = Visit((dynamic) node[0]);
-      str += Visit((dynamic) node[1]);
+    public string Visit (PlusEqual node) {
+      var str = Visit ((dynamic) node[0]);
+      str += Visit ((dynamic) node[1]);
       var varName = node[0].AnchorToken.Lexeme;
       str += "\t\ti32.add\n";
       if (TempLocalSymbolTable.Contains (varName)) {
@@ -206,9 +253,9 @@ namespace Hydra_compiler {
       return str;
     }
     //-----------------------------------------------------------
-    public string Visit (SubtracEqual node){
-      var str = Visit((dynamic) node[0]);
-      str += Visit((dynamic) node[1]);
+    public string Visit (SubtracEqual node) {
+      var str = Visit ((dynamic) node[0]);
+      str += Visit ((dynamic) node[1]);
       var varName = node[0].AnchorToken.Lexeme;
       str += "\t\ti32.sub\n";
       if (TempLocalSymbolTable.Contains (varName)) {
@@ -219,18 +266,33 @@ namespace Hydra_compiler {
       return str;
     }
     //-----------------------------------------------------------
-    public string Visit (FunctionCall node) {
+    public string Visit (FunctionCall node, bool isExpression = false) {
       var str = VisitChildren (node);
       str += $"\t\tcall ${node.AnchorToken.Lexeme}\n";
+      if(!isExpression){
+        str += "\t\tdrop\n";
+      }
       return str;
     }
     //-----------------------------------------------------------
-    public string Visit (If node){
+    public string Visit (If node) {
+      return "";
+    }
+    //-----------------------------------------------------------
+    public string Visit (ElifList node) {
+      return "";
+    }
+    //-----------------------------------------------------------
+    public string Visit (Elif node) {
+      return "";
+    }
+    //-----------------------------------------------------------
+    public string Visit (Else node) {
       return "";
     }
     //-----------------------------------------------------------
     public string Visit (Return node) {
-      return Visit ((dynamic) node[0]) +
+      return VisitExpression(node[0]) +
         "\t\treturn\n";
     }
 
@@ -251,6 +313,10 @@ namespace Hydra_compiler {
     //-----------------------------------------------------------
     public string Visit (IntLiteral node) {
       return $"    i32.const {node.AnchorToken.Lexeme}\n";
+    }
+    //-----------------------------------------------------------
+    public string Visit (int node) {
+      return $"    i32.const {node}\n";
     }
     //-----------------------------------------------------------
     public string Visit (True node) {
@@ -277,36 +343,35 @@ namespace Hydra_compiler {
       return VisitBinaryOperator ("i32.mul", node);
     }
     //-----------------------------------------------------------
+    public string Visit (CharLiteral node) {
+      return $"    i32.const {AsCodePoint(node.AnchorToken.Lexeme)[0]}\n";
+    }
+    //-----------------------------------------------------------
     public string Visit (StringLiteral node) {
       var lexeme = node.AnchorToken.Lexeme; // "ABC\n"
       var lexemeArr = AsCodePoint (lexeme); //[65, 66, 67, 10];
-      return ListToWat (lexemeArr as List<dynamic>);
+      return ListToWat (lexemeArr);
     }
-    //t = ["ABC\n", 20, 'c']
 
     public string Visit (Array node) {
-      var newArr = new List<dynamic> ();
-      foreach (var child in node) {
-        if (child is StringLiteral) {
-          newArr.Add (AsCodePoint (child.AnchorToken.Lexeme));
-        } else {
-          newArr.Add (child.AnchorToken.Lexeme);
-        }
-      }
-      return ListToWat (newArr); //
+      return ListToWat (node); //
     }
 
-    public string ListToWat (IList<dynamic> array) {
-      var t = Generatelabel ();
-      var sb = $"    i32.const 0\n" +
-        "     call $new\n" +
-        $"     local.set ${t}\n";
+    public string ListToWat (dynamic array, string tempName = null) {
+      tempName = tempName ?? Generatelabel ();
+      this.tempVariables.Add(tempName);
+      var sb = 
+        $"\t\ti32.const 0\n" +
+        "\t\tcall $new\n" +
+        $"\t\tlocal.set {tempName}\n";
       foreach (var item in array) {
-        sb += $"    local.get {t}\n" +
-          $"    i32.const {item}\n" +
-          "     call $add";
+        sb += 
+          $"\t\tlocal.get {tempName}\n" +
+          VisitExpression(item) +
+          "\t\tcall $add\n" +
+          "\t\tdrop\n";
       }
-      sb += $"     local.get {t}\n";
+      sb += $"\t\tlocal.get {tempName}\n";
       return sb;
     }
 

@@ -81,7 +81,7 @@ namespace Hydra_compiler {
 
     System.Collections.IEnumerator
     System.Collections.IEnumerable.GetEnumerator () {
-      throw new NotImplementedException ();
+      return children.GetEnumerator();
     }
 
     public override string ToString () {

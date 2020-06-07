@@ -23,7 +23,7 @@ namespace Hydra_compiler
     public class Token
     {
         public TokenCategory Category { get; }
-        public String Lexeme     { get; }
+        public String Lexeme     { get; set;}
         public int Row { get; }
         public int Column { get; }
 

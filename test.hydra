@@ -1,9 +1,13 @@
 
 main(){
-  var x,y = 20;
-  if(x == y){
-    x = 21;
-  }
+  //var x = [1,2,'A', "\n"];
+  var z = "ABC\n";
+  var x = [fun(), 3,4];
+  var w;
+  w = get(z,0);
+  printc(w);
 }
 
-
+fun(){
+  
+}

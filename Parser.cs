@@ -104,7 +104,7 @@ namespace Hydra_compiler {
 
     public Node VarDef () {
       var vardeflist = new VariableDefinitionList ();
-      while(Current == TokenCategory.VAR){
+      while (Current == TokenCategory.VAR) {
         Expect (TokenCategory.VAR);
         IdList (vardeflist);
         Expect (TokenCategory.SEMICOLON);
@@ -115,12 +115,12 @@ namespace Hydra_compiler {
       var id = Expect (TokenCategory.ID);
       if (Current == TokenCategory.ASSIGN) {
         Expect (TokenCategory.ASSIGN);
-        var assignment = new Assignment(){
+        var assignment = new Assignment () {
           AnchorToken = id
         };
-        assignment.Add(Expr ());
+        assignment.Add (Expr ());
         vardeflist.Add (assignment);
-      }else{
+      } else {
         Node identifier = new Identifier () {
           AnchorToken = id
         };
@@ -145,7 +145,7 @@ namespace Hydra_compiler {
       Expect (TokenCategory.CLOSE_PAR);
 
       Expect (TokenCategory.OPEN_CURLY);
-      fundef.Add (VarDefList());
+      fundef.Add (VarDefList ());
       fundef.Add (StmtList ());
       Expect (TokenCategory.CLOSE_CURLY);
       return fundef;
@@ -165,9 +165,9 @@ namespace Hydra_compiler {
         RestIDParamList (idParamList);
       }
     }
-    public Node VarDefList() {
+    public Node VarDefList () {
       var vardefList = VarDef ();
-      while(Current == TokenCategory.VAR){
+      while (Current == TokenCategory.VAR) {
         Expect (TokenCategory.VAR);
         IdList (vardefList);
         Expect (TokenCategory.SEMICOLON);
@@ -199,19 +199,19 @@ namespace Hydra_compiler {
           Expect (TokenCategory.SEMICOLON);
           return breakNode;
         case TokenCategory.RETURN:
-          var returnNode = new Return (){
+          var returnNode = new Return () {
             AnchorToken = Expect (TokenCategory.RETURN)
           };
           returnNode.Add (Expr ());
           Expect (TokenCategory.SEMICOLON);
           return returnNode;
         case TokenCategory.SEMICOLON:
-          var empty = new EmptyStatement (){
+          var empty = new EmptyStatement () {
             AnchorToken = Expect (TokenCategory.SEMICOLON)
           };
           return empty;
         case TokenCategory.VAR:
-          return VarDefList();
+          return VarDefList ();
         default:
           throw new SyntaxError (firstOfStatement, tokenStream.Current);
       }
@@ -221,13 +221,13 @@ namespace Hydra_compiler {
       switch (Current) {
         case TokenCategory.ASSIGN:
           Expect (TokenCategory.ASSIGN);
-          var expr = new Assignment (){
+          var expr = new Assignment () {
             AnchorToken = id
           };
           expr.Add (Expr ());
           return expr;
         case TokenCategory.PLUSPLUS:
-          var plusplus = new PlusPlus (){
+          var plusplus = new PlusPlus () {
             AnchorToken = Expect (TokenCategory.PLUSPLUS)
           };
           plusplus.Add (new Identifier () {
@@ -235,7 +235,7 @@ namespace Hydra_compiler {
           });
           return plusplus;
         case TokenCategory.LESSLESS:
-          var lessless = new LessLess (){
+          var lessless = new LessLess () {
             AnchorToken = Expect (TokenCategory.LESSLESS)
           };
           lessless.Add (new Identifier () {
@@ -243,7 +243,7 @@ namespace Hydra_compiler {
           });
           return lessless;
         case TokenCategory.PLUSEQUAL:
-          var plusequal = new PlusEqual (){
+          var plusequal = new PlusEqual () {
             AnchorToken = Expect (TokenCategory.PLUSEQUAL)
           };
           plusequal.Add (new Identifier () {
@@ -252,7 +252,7 @@ namespace Hydra_compiler {
           plusequal.Add (Expr ());
           return plusequal;
         case TokenCategory.SUBTRACEQUAL:
-          var subcequal = new SubtracEqual (){
+          var subcequal = new SubtracEqual () {
             AnchorToken = Expect (TokenCategory.SUBTRACEQUAL)
           };
           subcequal.Add (new Identifier () {
@@ -267,7 +267,7 @@ namespace Hydra_compiler {
       }
     }
     public Node FunCall (Token id) {
-      var functionCall = new FunctionCall (){
+      var functionCall = new FunctionCall () {
         AnchorToken = id
       };
       Expect (TokenCategory.OPEN_PAR);
@@ -277,19 +277,19 @@ namespace Hydra_compiler {
     }
     public void ExprList (Node functionCall) {
       if (firstOfExpression.Contains (Current)) {
-        functionCall.Add(Expr ());
+        functionCall.Add (Expr ());
         ExprListCont (functionCall);
       }
     }
     public void ExprListCont (Node expressionList) {
       while (Current == TokenCategory.COMMA) {
         Expect (TokenCategory.COMMA);
-        expressionList.Add(Expr ());
+        expressionList.Add (Expr ());
         ExprListCont (expressionList);
       }
     }
     public Node If () {
-      var ifNode = new If (){
+      var ifNode = new If () {
         AnchorToken = Expect (TokenCategory.IF)
       };
       Expect (TokenCategory.OPEN_PAR);
@@ -298,21 +298,21 @@ namespace Hydra_compiler {
       Expect (TokenCategory.OPEN_CURLY);
       ifNode.Add (StmtList ());
       Expect (TokenCategory.CLOSE_CURLY);
-      var elifNode = ElseIfList();
-      if(elifNode.Count() != 0){
-        ifNode.Add(elifNode);
+      var elifNode = ElseIfList ();
+      if (elifNode.Count () != 0) {
+        ifNode.Add (elifNode);
       }
       var elseNode = Else ();
-      if(elseNode.Count() != 0){
-        ifNode.Add(elseNode);
+      if (elseNode.Count () != 0) {
+        ifNode.Add (elseNode);
       }
       return ifNode;
     }
     public Node ElseIfList () {
       var eliflist = new ElifList ();
       while (Current == TokenCategory.ELIF) {
-        var elif = new Elif (){
-          AnchorToken = Expect (TokenCategory.ELIF)
+        var elif = new Elif () {
+        AnchorToken = Expect (TokenCategory.ELIF)
         };
         Expect (TokenCategory.OPEN_PAR);
         elif.Add (Expr ());
@@ -335,7 +335,7 @@ namespace Hydra_compiler {
       return elseNode;
     }
     public Node While () {
-      var whileNode = new While (){
+      var whileNode = new While () {
         AnchorToken = Expect (TokenCategory.WHILE)
       };
       Expect (TokenCategory.OPEN_PAR);
@@ -348,52 +348,52 @@ namespace Hydra_compiler {
     }
 
     public Node Expr () {
-      return ExprOr();
+      return ExprOr ();
     }
     public Node ExprOr () {
-      Node expr = ExprAnd();
+      Node expr = ExprAnd ();
       while (Current == TokenCategory.OR) {
-        var exprOr = new Or(){
-          AnchorToken = Expect (TokenCategory.OR)
+        var exprOr = new Or () {
+        AnchorToken = Expect (TokenCategory.OR)
         };
-        exprOr.Add(expr);
-        exprOr.Add(ExprAnd ());
+        exprOr.Add (expr);
+        exprOr.Add (ExprAnd ());
         expr = exprOr;
       }
       return expr;
     }
     public Node ExprAnd () {
-      Node expr = ExprComp();
+      Node expr = ExprComp ();
       while (Current == TokenCategory.AND) {
-        var exprAnd = new And(){
-          AnchorToken = Expect (TokenCategory.AND)
+        var exprAnd = new And () {
+        AnchorToken = Expect (TokenCategory.AND)
         };
-        exprAnd.Add(expr);
-        exprAnd.Add(ExprComp ());
+        exprAnd.Add (expr);
+        exprAnd.Add (ExprComp ());
         expr = exprAnd;
       }
       return expr;
     }
     public Node ExprComp () {
-      Node expr = ExprRel();
+      Node expr = ExprRel ();
       Node expr2;
       while (Current == TokenCategory.EQUALTO || Current == TokenCategory.NOTEQUALTO) {
         switch (Current) {
-          case TokenCategory.EQUALTO:
-            expr2 = new EqualTo(){
-              AnchorToken = Expect (TokenCategory.EQUALTO)
+        case TokenCategory.EQUALTO:
+        expr2 = new EqualTo () {
+        AnchorToken = Expect (TokenCategory.EQUALTO)
             };
             break;
           case TokenCategory.NOTEQUALTO:
-            expr2 = new NotEqualTo(){
+            expr2 = new NotEqualTo () {
               AnchorToken = Expect (TokenCategory.NOTEQUALTO)
             };
             break;
           default:
             throw new SyntaxError (new HashSet<TokenCategory> () { TokenCategory.EQUALTO, TokenCategory.NOTEQUALTO }, tokenStream.Current);
         }
-        expr2.Add(expr);
-        expr2.Add(ExprRel ());
+        expr2.Add (expr);
+        expr2.Add (ExprRel ());
         expr = expr2;
       }
       return expr;
@@ -405,23 +405,23 @@ namespace Hydra_compiler {
         Current == TokenCategory.GREATER || Current == TokenCategory.GREATEREQUAL
       ) {
         switch (Current) {
-          case TokenCategory.LESS:
-            expr2 = new LessThan(){
-              AnchorToken = Expect (TokenCategory.LESS)
+        case TokenCategory.LESS:
+        expr2 = new LessThan () {
+        AnchorToken = Expect (TokenCategory.LESS)
             };
             break;
           case TokenCategory.LESSEQUAL:
-            expr2 = new LessEqualThan(){
+            expr2 = new LessEqualThan () {
               AnchorToken = Expect (TokenCategory.LESSEQUAL)
             };
             break;
           case TokenCategory.GREATER:
-            expr2 = new GreaterThan(){
+            expr2 = new GreaterThan () {
               AnchorToken = Expect (TokenCategory.GREATER)
             };
             break;
           case TokenCategory.GREATEREQUAL:
-            expr2 = new GreaterEqualThan(){
+            expr2 = new GreaterEqualThan () {
               AnchorToken = Expect (TokenCategory.GREATEREQUAL)
             };
             break;
@@ -431,8 +431,8 @@ namespace Hydra_compiler {
                 TokenCategory.GREATER, TokenCategory.GREATEREQUAL
             }, tokenStream.Current);
         }
-        expr2.Add(expr);
-        expr2.Add(ExprAdd ());
+        expr2.Add (expr);
+        expr2.Add (ExprAdd ());
         expr = expr2;
       }
       return expr;
@@ -442,13 +442,13 @@ namespace Hydra_compiler {
       Node expr2;
       while (Current == TokenCategory.PLUS || Current == TokenCategory.NEG) {
         switch (Current) {
-          case TokenCategory.PLUS:
-            expr2 = new Plus(){
-              AnchorToken = Expect (TokenCategory.PLUS)
+        case TokenCategory.PLUS:
+        expr2 = new Plus () {
+        AnchorToken = Expect (TokenCategory.PLUS)
             };
             break;
           case TokenCategory.NEG:
-            expr2 = new Subtraction(){
+            expr2 = new Subtraction () {
               AnchorToken = Expect (TokenCategory.NEG)
             };
             break;
@@ -457,8 +457,8 @@ namespace Hydra_compiler {
               TokenCategory.PLUS, TokenCategory.NEG,
             }, tokenStream.Current);
         }
-        expr2.Add(expr);
-        expr2.Add(ExprMul ());
+        expr2.Add (expr);
+        expr2.Add (ExprMul ());
         expr = expr2;
       }
       return expr;
@@ -470,18 +470,18 @@ namespace Hydra_compiler {
         Current == TokenCategory.MOD
       ) {
         switch (Current) {
-          case TokenCategory.TIMES:
-            expr2 = new Times(){
-              AnchorToken = Expect (TokenCategory.TIMES)
+        case TokenCategory.TIMES:
+        expr2 = new Times () {
+        AnchorToken = Expect (TokenCategory.TIMES)
             };
             break;
           case TokenCategory.DIV:
-            expr2 = new Divide(){
+            expr2 = new Divide () {
               AnchorToken = Expect (TokenCategory.DIV)
             };
             break;
           case TokenCategory.MOD:
-            expr2 = new Modulo(){
+            expr2 = new Modulo () {
               AnchorToken = Expect (TokenCategory.MOD)
             };
             break;
@@ -491,8 +491,8 @@ namespace Hydra_compiler {
                 TokenCategory.MOD
             }, tokenStream.Current);
         }
-        expr2.Add(expr);
-        expr2.Add(ExprUnary ());
+        expr2.Add (expr);
+        expr2.Add (ExprUnary ());
         expr = expr2;
       }
       return expr;
@@ -503,7 +503,7 @@ namespace Hydra_compiler {
         case TokenCategory.NEG:
         case TokenCategory.NOT:
           var opunary = OpUnary ();
-          opunary.Add(ExprUnary ());
+          opunary.Add (ExprUnary ());
           return opunary;
         case TokenCategory.ID:
         case TokenCategory.LIT_INT:
@@ -523,15 +523,15 @@ namespace Hydra_compiler {
     public Node OpUnary () {
       switch (Current) {
         case TokenCategory.PLUS:
-          return new Plus(){
+          return new Plus () {
             AnchorToken = Expect (TokenCategory.PLUS)
           };
         case TokenCategory.NEG:
-          return new Neg(){
+          return new Neg () {
             AnchorToken = Expect (TokenCategory.NEG)
           };
         case TokenCategory.NOT:
-          return new Not(){
+          return new Not () {
             AnchorToken = Expect (TokenCategory.NOT)
           };
         default:
@@ -542,7 +542,7 @@ namespace Hydra_compiler {
       switch (Current) {
         case TokenCategory.ID:
           var id = Expect (TokenCategory.ID);
-          Node expr = new Identifier(){
+          Node expr = new Identifier () {
             AnchorToken = id
           };
           if (Current == TokenCategory.OPEN_PAR) {
@@ -562,12 +562,16 @@ namespace Hydra_compiler {
             AnchorToken = Expect (TokenCategory.FALSE)
           };
         case TokenCategory.LIT_CHAR:
+          var token = Expect (TokenCategory.LIT_CHAR);
+          token.Lexeme = token.Lexeme.Substring (1, token.Lexeme.Length - 2);
           return new CharLiteral () {
-            AnchorToken = Expect (TokenCategory.LIT_CHAR)
+            AnchorToken = token
           };
         case TokenCategory.LIT_STR:
+          var strtoken = Expect (TokenCategory.LIT_STR);
+          strtoken.Lexeme = strtoken.Lexeme.Substring (1, strtoken.Lexeme.Length - 2);
           return new StringLiteral () {
-            AnchorToken = Expect (TokenCategory.LIT_STR)
+            AnchorToken = strtoken
           };
         case TokenCategory.OPEN_BRAC:
           return Array ();
