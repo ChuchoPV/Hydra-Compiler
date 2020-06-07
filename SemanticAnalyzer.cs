@@ -17,7 +17,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
-using System.Collections.Generic;
 
 namespace Hydra_compiler {
 
@@ -127,7 +126,7 @@ namespace Hydra_compiler {
             $"Variable already declare: {variableName}",
             node.AnchorToken);
         }
-        GlobalVariables.Add (variableName);
+        GlobalVariables.Add (new GlobalVariable(variableName, node[0].AnchorToken.Lexeme));
       } else if (isVariableDefinition && !isFirstPass) {
         if (TempLocalSymbolTable == null) return;
         lookingExistance = true;
@@ -298,7 +297,7 @@ namespace Hydra_compiler {
           );
         }
       } else if (isFirstPass && !GlobalVariables.Contains (variableName)) {
-        GlobalVariables.Add (variableName);
+        GlobalVariables.Add (new GlobalVariable(variableName, "0"));
       } else if (!isFirstPass && lookingExistance) {
         if (!TempLocalSymbolTable.Contains (variableName) &&
           !GlobalVariables.Contains (variableName)

@@ -23,11 +23,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Hydra_compiler {
-  public class GlobalVariables : IEnumerable<string> {
+  public class GlobalVariables : IEnumerable<GlobalVariable> {
 
-    List<string> data = new List<string> ();
+    List<GlobalVariable> data = new List<GlobalVariable> ();
 
-    public string this [int index] {
+    public GlobalVariable this [int index] {
       get {
         return data[index];
       }
@@ -36,12 +36,21 @@ namespace Hydra_compiler {
       }
     }
 
-    public void Add (string element) {
+    public int Count {
+      get {
+        return data.Count;
+      }
+    }
+
+    public void Add (GlobalVariable element) {
       data.Add (element);
     }
 
     public bool Contains (string key) {
-      return data.Contains (key);
+      foreach (var item in data) {
+        if (item.name == key) return true;
+      }
+      return false;
     }
 
     public override string ToString () {
@@ -55,12 +64,22 @@ namespace Hydra_compiler {
       return sb.ToString ();
     }
 
-    public IEnumerator<string> GetEnumerator () {
+    public IEnumerator<GlobalVariable> GetEnumerator () {
       return data.GetEnumerator ();
     }
 
     IEnumerator IEnumerable.GetEnumerator () {
       throw new NotImplementedException ();
+    }
+  }
+
+  public class GlobalVariable {
+    public string name;
+    public dynamic value;
+
+    public GlobalVariable (string name, dynamic value) {
+      this.name = name;
+      this.value = value;
     }
   }
 
@@ -115,9 +134,9 @@ namespace Hydra_compiler {
       sb.Append ("\t========================\n");
       string hasRefSTValue = this.RefST == null ? "\t      |     null" : "";
       sb.Append ($"\t{this.isPrimitive}\t      |     {this.arity}{hasRefSTValue}\n");
-      if(this.RefST != null){
+      if (this.RefST != null) {
         sb.Append ("\t------------------------\n\n");
-        sb.Append($"{this.RefST}");
+        sb.Append ($"{this.RefST}");
       }
       sb.Append ("\t========================\n");
       return sb.ToString ();
@@ -126,7 +145,7 @@ namespace Hydra_compiler {
 
   public class LocalSymbolTable : IEnumerable<KeyValuePair<string, bool>> {
 
-    public LocalSymbolTable(string name){
+    public LocalSymbolTable (string name) {
       this.name = name;
     }
     IDictionary<string, bool> data = new SortedDictionary<string, bool> ();
@@ -144,7 +163,7 @@ namespace Hydra_compiler {
       sb.Append ("\t====================\n");
       foreach (var entry in data) {
         sb.Append ($"\t{entry.Key}     |    {entry.Value}\n");
-      } 
+      }
       sb.Append ("\t====================\n");
       return sb.ToString ();
     }

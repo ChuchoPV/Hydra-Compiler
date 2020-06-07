@@ -22,14 +22,15 @@ using System.IO;
 
 namespace Hydra_compiler {
   public class Driver {
-    const string VERSION = "0.4";
+    const string VERSION = "0.5";
 
     //-----------------------------------------------------------
     static readonly string[] ReleaseIncludes = {
       "Lexical analysis",
       "Syntactic analysis",
       "AST construction",
-      "Semantic analysis"
+      "Semantic analysis",
+      "WAT code generation"
     };
 
     //-----------------------------------------------------------
@@ -109,7 +110,29 @@ namespace Hydra_compiler {
       };
 
     }
+    void CreateGlobalVariable (GlobalVariables table) {
+      var result = "module.exports = {\n";
+      int index = 0;
+      foreach (var variable in table) {
+        index++;
+        //'c'
+        //"Hola"
+        int number;
+        var isInt = Int32.TryParse(variable.value, out number);
 
+        result += $"\t{variable.name}" + 
+          " : new WebAssembly.Global({value:'i32', mutable:true}, " + 
+          $"{(isInt ? number : 0)}" +
+          ")";
+        if (index != table.Count) {
+          result += ",\n";
+        } else {
+          result += "\n";
+        }
+      }
+      result += "}\n";
+      File.WriteAllText ("./globals.js", result);
+    }
     //-----------------------------------------------------------
     void Run (string[] args) {
 
@@ -118,25 +141,26 @@ namespace Hydra_compiler {
       PrintReleaseIncludes ();
       Console.WriteLine ();
 
-      if (args.Length != 1) {
-         Console.Error.WriteLine(
-             "Please specify the name of the input file.");
-         Environment.Exit(1);
+      if (args.Length != 2) {
+        Console.Error.WriteLine (
+          "Please specify the name of the input file.");
+        Environment.Exit (1);
       }
 
-      if (args.Length == 1) {
+      if (args.Length == 2) {
         try {
           var inputPath = args[0];
+          var outputPath = args[1];
           var input = File.ReadAllText (inputPath);
           var parser = new Parser (new Scanner (input).Start ().GetEnumerator ());
-          var program = parser.Prog ();
-          // Console.WriteLine(program.ToStringTree());
+          var ast = parser.Prog ();
+          Console.WriteLine(ast.ToStringTree());
           var semantic = new SemanticAnalyzer ();
           SetAPI (semantic);
           semantic.isFirstPass = true;
-          semantic.Visit ((dynamic) program);
+          semantic.Visit ((dynamic) ast);
           semantic.isFirstPass = false;
-          semantic.Visit ((dynamic) program);
+          semantic.Visit ((dynamic) ast);
 
           if (!semantic.GlobalFunctions.Contains ("main")) {
             throw new SemanticError (
@@ -144,13 +168,16 @@ namespace Hydra_compiler {
               new FileInfo (inputPath).FullName
             );
           }
-
           Console.WriteLine ("Semantics OK.");
-          Console.WriteLine ();
-          Console.WriteLine ("Tables");
-          Console.WriteLine ("============\n");
-          Console.WriteLine (semantic.GlobalVariables.ToString ());
-          Console.WriteLine (semantic.GlobalFunctions.ToString ());
+          CreateGlobalVariable (semantic.GlobalVariables);
+          var codeGenerator = new WATVisitor (semantic.GlobalVariables, semantic.GlobalFunctions);
+          File.WriteAllText (
+            outputPath,
+            codeGenerator.Visit ((dynamic) ast));
+          Console.WriteLine (
+            "Created WAT (WebAssembly text format) file " +
+            $"'{outputPath}'.");
+
         } catch (Exception e) {
           if (e is FileNotFoundException || e is SyntaxError || e is SemanticError) {
             Console.Error.WriteLine (e.Message);
@@ -162,31 +189,35 @@ namespace Hydra_compiler {
       } else {
         try {
           Console.Write ("> ");
-          var input = Console.ReadLine ();
-          // var input = File.ReadAllText ("code_samples/000_test.hydra");
+          // var input = Console.ReadLine ();
+          var outputPath = "output.wat";
+          var input = File.ReadAllText ("test.hydra");
           var parser = new Parser (new Scanner (input).Start ().GetEnumerator ());
-          var program = parser.Prog ();
-          // Console.WriteLine (program.ToStringTree ());
+          var ast = parser.Prog ();
+          // Console.WriteLine (ast.ToStringTree ());
+          // return;
           var semantic = new SemanticAnalyzer ();
           SetAPI (semantic);
           semantic.isFirstPass = true;
-          semantic.Visit ((dynamic) program);
+          semantic.Visit ((dynamic) ast);
           semantic.isFirstPass = false;
-          semantic.Visit ((dynamic) program);
+          semantic.Visit ((dynamic) ast);
 
           if (!semantic.GlobalFunctions.Contains ("main")) {
             throw new SemanticError (
               "The main function was not found",
-              new FileInfo("code_samples/000_test.hydra").FullName
+              new FileInfo ("code_samples/000_test.hydra").FullName
             );
           }
-
           Console.WriteLine ("Semantics OK.");
-          Console.WriteLine ();
-          Console.WriteLine ("Tables");
-          Console.WriteLine ("============\n");
-          Console.WriteLine (semantic.GlobalVariables.ToString ());
-          Console.WriteLine (semantic.GlobalFunctions.ToString ());
+          CreateGlobalVariable (semantic.GlobalVariables);
+          var codeGenerator = new WATVisitor (semantic.GlobalVariables, semantic.GlobalFunctions);
+          File.WriteAllText (
+            outputPath,
+            codeGenerator.Visit ((dynamic) ast));
+          Console.WriteLine (
+            "Created WAT (WebAssembly text format) file " +
+            $"'{outputPath}'.");
 
         } catch (Exception e) {
           if (e is FileNotFoundException || e is SyntaxError || e is SemanticError) {

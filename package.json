@@ -1,0 +1,12 @@
+{
+  "name": "buttercup",
+  "version": "0.5.0",
+  "description": "Hydra compiler with WASM code generation",
+  "author": "Ariel Ortiz\nmodified by: Jesús Perea, Jorge López, Gerardo Galván.",
+  "license": "GPL-3.0",
+  "repository": "https://github.com/ariel-ortiz/",
+  "dependencies": {
+    "readline-sync": "^1.4.10",
+    "wabt": "^1.0.12"
+  }
+}
