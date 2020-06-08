@@ -118,11 +118,11 @@ namespace Hydra_compiler {
       PrintReleaseIncludes ();
       Console.WriteLine ();
 
-      // if (args.Length != 2) {
-      //   Console.Error.WriteLine (
-      //     "Please specify the name of the input file.");
-      //   Environment.Exit (1);
-      // }
+      if (args.Length != 2) {
+        Console.Error.WriteLine (
+          "Please specify the name of the input file.");
+        Environment.Exit (1);
+      }
 
       if (args.Length == 2) {
         try {
@@ -131,7 +131,7 @@ namespace Hydra_compiler {
           var input = File.ReadAllText (inputPath);
           var parser = new Parser (new Scanner (input).Start ().GetEnumerator ());
           var ast = parser.Prog ();
-          Console.WriteLine(ast.ToStringTree());
+          // Console.WriteLine(ast.ToStringTree());
           var semantic = new SemanticAnalyzer ();
           SetAPI (semantic);
           semantic.isFirstPass = true;

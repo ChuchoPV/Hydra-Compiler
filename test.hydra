@@ -1,13 +1,11 @@
 
 main(){
-  //var x = [1,2,'A', "\n"];
-  var z = "ABC\n";
-  var x = [fun(), 3,4];
-  var w;
-  w = get(z,0);
-  printc(w);
+  var x = [["Hola"]];
+  printArr(x);
 }
 
-fun(){
-  
+printArr(x){
+  while(size(x) != 0){
+
+  }
 }

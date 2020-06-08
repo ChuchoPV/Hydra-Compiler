@@ -126,6 +126,7 @@ namespace Hydra_compiler {
     public bool isPrimitive;
     public int arity;
     public LocalSymbolTable RefST;
+    public string name;
 
     public override string ToString () {
       var sb = new StringBuilder ();

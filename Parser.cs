@@ -299,13 +299,13 @@ namespace Hydra_compiler {
       ifNode.Add (StmtList ());
       Expect (TokenCategory.CLOSE_CURLY);
       var elifNode = ElseIfList ();
-      if (elifNode.Count () != 0) {
+      // if (elifNode.Count () != 0) {
         ifNode.Add (elifNode);
-      }
+      // }
       var elseNode = Else ();
-      if (elseNode.Count () != 0) {
+      // if (elseNode.Count () != 0) {
         ifNode.Add (elseNode);
-      }
+      // }
       return ifNode;
     }
     public Node ElseIfList () {
