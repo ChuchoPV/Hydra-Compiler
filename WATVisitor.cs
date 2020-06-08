@@ -40,7 +40,6 @@ namespace Hydra_compiler {
     }
     string tempValueAssignment = "";
     bool inVariableDefinition = false;
-    bool inStatement = false;
     int labelCounter = 0;
     List<String> tempVariables = new List<String> ();
     HashSet<FunctionData> apiUsed = new HashSet<FunctionData> ();
@@ -66,8 +65,9 @@ namespace Hydra_compiler {
           7
         );
       }
+      str = str.Substring (i, 2);
       return (
-        char.ConvertToUtf32 (Regex.Unescape (str), i),
+        char.ConvertToUtf32 (Regex.Unescape (str), 0),
         1
       );
     }
@@ -145,7 +145,7 @@ namespace Hydra_compiler {
         sb.Append ($"  (func ${functionName} ");
       };
       var body = Visit ((dynamic) node[1]) + Visit ((dynamic) node[2]);
-      sb.Append(Visit ((dynamic) node[0]));
+      sb.Append (Visit ((dynamic) node[0]));
       sb.Append ("\n\t\t(result i32)\n");
       foreach (var tempVariable in tempVariables) {
         sb.Append ($"\t\t(local {tempVariable} i32)\n");
@@ -168,10 +168,7 @@ namespace Hydra_compiler {
     }
     //-----------------------------------------------------------
     public string Visit (StatementList node) {
-      inStatement = true;
-      var str = VisitChildren (node);
-      inStatement = false;
-      return str;
+      return VisitChildren (node);
     }
     //-----------------------------------------------------------
     public string VisitExpression (dynamic node) {
@@ -242,7 +239,7 @@ namespace Hydra_compiler {
     //-----------------------------------------------------------
     public string Visit (PlusEqual node) {
       var str = Visit ((dynamic) node[0]);
-      str += Visit ((dynamic) node[1]);
+      str += VisitExpression ((dynamic) node[1]);
       var varName = node[0].AnchorToken.Lexeme;
       str += "\t\ti32.add\n";
       if (TempLocalSymbolTable.Contains (varName)) {
@@ -255,7 +252,7 @@ namespace Hydra_compiler {
     //-----------------------------------------------------------
     public string Visit (SubtracEqual node) {
       var str = Visit ((dynamic) node[0]);
-      str += Visit ((dynamic) node[1]);
+      str += VisitExpression ((dynamic) node[1]);
       var varName = node[0].AnchorToken.Lexeme;
       str += "\t\ti32.sub\n";
       if (TempLocalSymbolTable.Contains (varName)) {
@@ -267,7 +264,7 @@ namespace Hydra_compiler {
     }
     //-----------------------------------------------------------
     public string Visit (FunctionCall node, bool isExpression = false) {
-      var str = VisitArguments (node);
+      var str = VisitExpressions (node);
       var functionName = node.AnchorToken.Lexeme;
       if (GlobalFunctions[functionName].isPrimitive) {
         GlobalFunctions[functionName].name = functionName;
@@ -293,14 +290,13 @@ namespace Hydra_compiler {
       if (ifs.Count == index) {
         return Visit (elseNode);
       }
-      return Visit ((dynamic) ifs[index].Item1) +
+      return VisitExpression ((dynamic) ifs[index].Item1) +
         $"{Ident(index+1)}if\n" +
         Visit ((dynamic) ifs[index].Item2) +
         $"{Ident(index+1)}else\n" +
         IfHelper (ifs, elseNode, index + 1) +
         $"{Ident(index+1)}end\n";
     }
-
     //-----------------------------------------------------------
     public string Visit (ElifList node) {
       //Allready Processed
@@ -320,19 +316,21 @@ namespace Hydra_compiler {
       var label1 = Generatelabel ();
       var label2 = Generatelabel ();
       whileStack.Push (label1);
-      return $"{Ident(whileStack.Count)}block " + label1 + "\n" +
+      var str = $"{Ident(whileStack.Count)}block " + label1 + "\n" +
         $"{Ident(whileStack.Count + 1)}loop " + label2 + "\n" +
-        Visit ((dynamic) node[0]) +
+        VisitExpression ((dynamic) node[0]) +
         $"{Ident(whileStack.Count + 1)}i32.eqz\n" +
         $"{Ident(whileStack.Count + 1)}br_if " + label1 + "\n" +
         Visit ((dynamic) node[1]) +
         $"{Ident(whileStack.Count+ 1)}br " + label2 + "\n" +
         $"{Ident(whileStack.Count +  1)}end\n" +
         $"{Ident(whileStack.Count)}end\n";
+      whileStack.Pop();
+      return str;
     }
     //-----------------------------------------------------------
     public string Visit (Break node) {
-      return $"{Ident(whileStack.Count + 1)}br " + whileStack.Pop () + "\n";
+      return $"{Ident(whileStack.Count + 1)}br " + whileStack.Peek () + "\n";
     }
     //-----------------------------------------------------------
     public string Visit (Return node) {
@@ -347,7 +345,7 @@ namespace Hydra_compiler {
 
     #region Expressions
     public string Visit (ExpressionList node) {
-      return VisitChildren (node);
+      return VisitExpressions (node);
     }
     //-----------------------------------------------------------
     public string Visit (Or node) {
@@ -401,7 +399,7 @@ namespace Hydra_compiler {
     }
     //-----------------------------------------------------------
     public string Visit (Neg node) {
-      return "\t\ti32.const 0\n" + Visit ((dynamic) node[0]) + "\t\ti32.sub\n";
+      return "\t\ti32.const 0\n" + VisitExpression ((dynamic) node[0]) + "\t\ti32.sub\n";
     }
     //-----------------------------------------------------------
     public string Visit (Times node) {
@@ -417,7 +415,7 @@ namespace Hydra_compiler {
     }
     //-----------------------------------------------------------
     public string Visit (Not node) {
-      return Visit ((dynamic) node[0]) + "\t\ti32.eqz\n";
+      return VisitExpression ((dynamic) node[0]) + "\t\ti32.eqz\n";
     }
 
     #endregion
@@ -429,11 +427,11 @@ namespace Hydra_compiler {
       if (TempLocalSymbolTable != null && TempLocalSymbolTable.Contains (varName)) {
         if (inVariableDefinition)
           return $"    (local ${varName} i32)\n";
-      } else if (GlobalVariables.Contains (varName) && !inStatement) {
+      } else if (!inVariableDefinition && GlobalVariables.Contains (varName)) {
         //Found a GlobalVariable, but this logic was already processed
-        return "";
-      } else if (GlobalVariables.Contains (varName)) {
         return $"\t\tglobal.get ${varName}\n";
+      } else if (GlobalVariables.Contains (varName)) {
+        return "";
       }
       return $"\t\tlocal.get ${varName}\n";
     }
@@ -504,7 +502,7 @@ namespace Hydra_compiler {
       return sb.ToString ();
     }
 
-    string VisitArguments(Node node){
+    string VisitExpressions (Node node) {
       var sb = new StringBuilder ();
       foreach (var n in node) {
         sb.Append (VisitExpression ((dynamic) n));
@@ -513,8 +511,8 @@ namespace Hydra_compiler {
     }
     //-----------------------------------------------------------
     string VisitBinaryOperator (string op, Node node) {
-      return Visit ((dynamic) node[0]) +
-        Visit ((dynamic) node[1]) +
+      return VisitExpression ((dynamic) node[0]) +
+        VisitExpression ((dynamic) node[1]) +
         $"    {op}\n";
     }
     //-----------------------------------------------------------

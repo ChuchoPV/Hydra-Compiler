@@ -149,7 +149,7 @@ namespace Hydra_compiler {
     public LocalSymbolTable (string name) {
       this.name = name;
     }
-    IDictionary<string, bool> data = new SortedDictionary<string, bool> ();
+    IDictionary<string, bool> data = new Dictionary<string, bool> ();
     public string name;
 
     public IEnumerator<KeyValuePair<string, bool>> GetEnumerator () {

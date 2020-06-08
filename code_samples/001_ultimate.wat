@@ -3,34 +3,121 @@
 (module
   (import "hydra" "new" (func $new (param i32) (result i32)))
   (import "hydra" "add" (func $add (param i32) (param i32) (result i32)))
-  (import "hydra" "size" (func $size (param i32) (result i32)))
+  (import "hydra" "prints" (func $prints (param i32) (result i32)))
   (import "hydra" "printi" (func $printi (param i32) (result i32)))
   (import "hydra" "println" (func $println (result i32)))
-  (import "hydra" "prints" (func $prints (param i32) (result i32)))
-	(global $fails (mut i32) (i32.const 0))
+	(global $six (mut i32) (i32.const 0))
+	(global $seven (mut i32) (i32.const 0))
   (func (export "main") 
 		(result i32)
 		(local $00000 i32)
 		(local $00001 i32)
-    (local $s i32)
-    (local $a i32)
-    (local $i i32)
-    (local $n i32)
-    i32.const 0
-		global.set $fails
+    (local $answer i32)
+    i32.const 6
+		global.set $six
+    i32.const 7
+		global.set $seven
+		global.get $six
+		global.get $seven
+    i32.mul
+		local.set $answer
 		i32.const 0
 		call $new
 		local.set $00000
 		local.get $00000
-    i32.const 161
+    i32.const 84
 		call $add
 		drop
 		local.get $00000
-    i32.const 8364
+    i32.const 104
+		call $add
+		drop
+		local.get $00000
+    i32.const 101
+		call $add
+		drop
+		local.get $00000
+    i32.const 32
+		call $add
+		drop
+		local.get $00000
+    i32.const 97
+		call $add
+		drop
+		local.get $00000
+    i32.const 110
 		call $add
 		drop
 		local.get $00000
     i32.const 115
+		call $add
+		drop
+		local.get $00000
+    i32.const 119
+		call $add
+		drop
+		local.get $00000
+    i32.const 101
+		call $add
+		drop
+		local.get $00000
+    i32.const 114
+		call $add
+		drop
+		local.get $00000
+    i32.const 32
+		call $add
+		drop
+		local.get $00000
+    i32.const 116
+		call $add
+		drop
+		local.get $00000
+    i32.const 111
+		call $add
+		drop
+		local.get $00000
+    i32.const 32
+		call $add
+		drop
+		local.get $00000
+    i32.const 116
+		call $add
+		drop
+		local.get $00000
+    i32.const 104
+		call $add
+		drop
+		local.get $00000
+    i32.const 101
+		call $add
+		drop
+		local.get $00000
+    i32.const 32
+		call $add
+		drop
+		local.get $00000
+    i32.const 117
+		call $add
+		drop
+		local.get $00000
+    i32.const 108
+		call $add
+		drop
+		local.get $00000
+    i32.const 116
+		call $add
+		drop
+		local.get $00000
+    i32.const 105
+		call $add
+		drop
+		local.get $00000
+    i32.const 109
+		call $add
+		drop
+		local.get $00000
+    i32.const 97
 		call $add
 		drop
 		local.get $00000
@@ -46,27 +133,15 @@
 		call $add
 		drop
 		local.get $00000
-    i32.const 110
+    i32.const 113
 		call $add
 		drop
 		local.get $00000
-    i32.const 105
+    i32.const 117
 		call $add
 		drop
 		local.get $00000
-    i32.const 241
-		call $add
-		drop
-		local.get $00000
-    i32.const 111
-		call $add
-		drop
-		local.get $00000
-    i32.const 32
-		call $add
-		drop
-		local.get $00000
-    i32.const 8364
+    i32.const 101
 		call $add
 		drop
 		local.get $00000
@@ -78,23 +153,11 @@
 		call $add
 		drop
 		local.get $00000
-    i32.const 225
-		call $add
-		drop
-		local.get $00000
-    i32.const 32
-		call $add
-		drop
-		local.get $00000
-    i32.const 98
-		call $add
-		drop
-		local.get $00000
     i32.const 105
 		call $add
 		drop
 		local.get $00000
-    i32.const 101
+    i32.const 111
 		call $add
 		drop
 		local.get $00000
@@ -106,48 +169,53 @@
 		call $add
 		drop
 		local.get $00000
-    i32.const 209
-		call $add
-		drop
-		local.get $00000
     i32.const 111
 		call $add
 		drop
 		local.get $00000
-    i32.const 241
+    i32.const 102
 		call $add
 		drop
 		local.get $00000
-    i32.const 111
+    i32.const 32
 		call $add
 		drop
 		local.get $00000
-    i32.const 33
+    i32.const 108
 		call $add
 		drop
 		local.get $00000
-    i32.const 10
+    i32.const 105
 		call $add
 		drop
 		local.get $00000
-		local.set $s
+    i32.const 102
+		call $add
+		drop
+		local.get $00000
+    i32.const 101
+		call $add
+		drop
+		local.get $00000
+    i32.const 44
+		call $add
+		drop
+		local.get $00000
+    i32.const 32
+		call $add
+		drop
+		local.get $00000
+		call $prints
+		drop
 		i32.const 0
 		call $new
 		local.set $00001
 		local.get $00001
-    i32.const 161
-		call $add
-		drop
-		local.get $00001
-    i32.const 8364
-		call $add
-		drop
-		local.get $00001
-    i32.const 115
-		call $add
-		drop
-		local.get $00001
     i32.const 116
+		call $add
+		drop
+		local.get $00001
+    i32.const 104
 		call $add
 		drop
 		local.get $00001
@@ -159,6 +227,10 @@
 		call $add
 		drop
 		local.get $00001
+    i32.const 117
+		call $add
+		drop
+		local.get $00001
     i32.const 110
 		call $add
 		drop
@@ -167,43 +239,7 @@
 		call $add
 		drop
 		local.get $00001
-    i32.const 241
-		call $add
-		drop
-		local.get $00001
-    i32.const 111
-		call $add
-		drop
-		local.get $00001
-    i32.const 32
-		call $add
-		drop
-		local.get $00001
-    i32.const 8364
-		call $add
-		drop
-		local.get $00001
-    i32.const 115
-		call $add
-		drop
-		local.get $00001
-    i32.const 116
-		call $add
-		drop
-		local.get $00001
-    i32.const 225
-		call $add
-		drop
-		local.get $00001
-    i32.const 32
-		call $add
-		drop
-		local.get $00001
-    i32.const 98
-		call $add
-		drop
-		local.get $00001
-    i32.const 105
+    i32.const 118
 		call $add
 		drop
 		local.get $00001
@@ -211,7 +247,19 @@
 		call $add
 		drop
 		local.get $00001
-    i32.const 110
+    i32.const 114
+		call $add
+		drop
+		local.get $00001
+    i32.const 115
+		call $add
+		drop
+		local.get $00001
+    i32.const 101
+		call $add
+		drop
+		local.get $00001
+    i32.const 44
 		call $add
 		drop
 		local.get $00001
@@ -219,43 +267,76 @@
 		call $add
 		drop
 		local.get $00001
-    i32.const 209
+    i32.const 97
 		call $add
 		drop
 		local.get $00001
-    i32.const 111
+    i32.const 110
 		call $add
 		drop
 		local.get $00001
-    i32.const 241
+    i32.const 100
 		call $add
 		drop
 		local.get $00001
-    i32.const 111
+    i32.const 32
 		call $add
 		drop
 		local.get $00001
-    i32.const 33
+    i32.const 101
 		call $add
 		drop
 		local.get $00001
-    i32.const 10
+    i32.const 118
 		call $add
 		drop
 		local.get $00001
-		local.set $a
-    i32.const 0
-		local.set $i
-		local.get $s
-		call $size
-		local.set $n
-		global.get $fails
+    i32.const 101
+		call $add
+		drop
+		local.get $00001
+    i32.const 114
+		call $add
+		drop
+		local.get $00001
+    i32.const 121
+		call $add
+		drop
+		local.get $00001
+    i32.const 116
+		call $add
+		drop
+		local.get $00001
+    i32.const 104
+		call $add
+		drop
+		local.get $00001
+    i32.const 105
+		call $add
+		drop
+		local.get $00001
+    i32.const 110
+		call $add
+		drop
+		local.get $00001
+    i32.const 103
+		call $add
+		drop
+		local.get $00001
+    i32.const 58
+		call $add
+		drop
+		local.get $00001
+    i32.const 32
+		call $add
+		drop
+		local.get $00001
+		call $prints
+		drop
+		local.get $answer
 		call $printi
 		drop
 		call $println
-		drop
-		local.get $a
-		call $prints
 		drop
 		i32.const 0
 	)

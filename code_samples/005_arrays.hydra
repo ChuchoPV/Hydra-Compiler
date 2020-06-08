@@ -3,6 +3,7 @@
  * (C) 2020 Ariel Ortiz, ITESM CEM
  */
 
+
 // Prints all the elements in the array list referred by handle a.
 print_array(a) {
     var first, i, n;
@@ -84,7 +85,7 @@ main() {
              91, 69, 62, 25, 65];
     prints("Original array: ");
     print_array(array);
-    println(0);
+    println();
     sum = sum_array(array);
     max = max_array(array);
     prints("Sum of array:   ");

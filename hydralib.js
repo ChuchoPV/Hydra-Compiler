@@ -44,6 +44,8 @@ const validIntRegEx = /^\s*-?\d+\s*$/;
  */
 function checkBounds(a, i, errorMessage) {
   if (!(0 <= i && i < a.length)) {
+    console.log(a);
+    console.log(i);
     throw new Error(errorMessage);
   }
 }
