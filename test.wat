@@ -3,62 +3,23 @@
 (module
   (import "hydra" "new" (func $new (param i32) (result i32)))
   (import "hydra" "add" (func $add (param i32) (param i32) (result i32)))
-  (import "hydra" "get" (func $get (param i32) (param i32) (result i32)))
-  (import "hydra" "printi" (func $printi (param i32) (result i32)))
+  (import "hydra" "prints" (func $prints (param i32) (result i32)))
   (func (export "main") 
 		(result i32)
 		(local $00000 i32)
-		(local $00001 i32)
-		(local $00002 i32)
-    (local $x i32)
+    (local $nombre i32)
 		i32.const 0
 		call $new
 		local.set $00000
 		local.get $00000
-		i32.const 0
-		call $new
-		local.set $00001
-		local.get $00001
-		i32.const 0
-		call $new
-		local.set $00002
-		local.get $00002
-    i32.const 72
-		call $add
-		drop
-		local.get $00002
-    i32.const 111
-		call $add
-		drop
-		local.get $00002
-    i32.const 108
-		call $add
-		drop
-		local.get $00002
-    i32.const 97
-		call $add
-		drop
-		local.get $00002
-		call $add
-		drop
-		local.get $00001
+    i32.const 65
 		call $add
 		drop
 		local.get $00000
-    local.set $x
-		local.get $x
-		call $printArr
+		call $prints
 		drop
-		i32.const 0
-	)
-  (func $printArr (param $x i32) 
-		(result i32)
-		local.get $x
-    i32.const 0
-		call $get
-    i32.const 0
-		call $get
-		call $printi
+		local.get $nombre
+		call $prints
 		drop
 		i32.const 0
 	)

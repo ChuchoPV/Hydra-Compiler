@@ -21,7 +21,6 @@
 
 const fs = require('fs');
 const hydralib = require('./hydralib.js');
-const globals = require("./globals.js");
 
 async function main() {
   try {
@@ -32,8 +31,7 @@ async function main() {
     const fileName = process.argv[2];
     const buffer = fs.readFileSync(fileName);
     const module = await WebAssembly.compile(buffer);
-    const instance = await WebAssembly.instantiate(module, 
-      Object.assign(hydralib, globals));
+    const instance = await WebAssembly.instantiate(module, hydralib);
     instance.exports.main();
   } catch (error) {
     console.log(error.message);

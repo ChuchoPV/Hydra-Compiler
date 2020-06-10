@@ -1,11 +1,7 @@
 
+
 main(){
-  var x = [["Hola"]];
-  printArr(x);
-}
-
-printArr(x){
-  while(size(x) != 0){
-
-  }
+  var nombre;
+  prints("A");
+  prints(nombre);
 }
